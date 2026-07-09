@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repaso General · Gestión por Procesos</title>
+<style>
+:root{
+  --teal:#0097A7;
+  --teal-dark:#00707C;
+  --teal-light:#E0F4F6;
+  --ink:#1E2A2E;
+  --gray:#5C6B6E;
+  --line:#DCE7E8;
+  --green:#2E9E5B;
+  --amber:#E0A100;
+  --red:#D64545;
+  --white:#FFFFFF;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI',Arial,sans-serif;color:var(--ink);background:var(--white);line-height:1.55;}
+h1,h2,h3,h4{font-family:'Segoe UI',Arial,sans-serif;margin:0 0 .4em 0;}
+.hero{background:linear-gradient(135deg,var(--teal) 0%,var(--teal-dark) 100%);color:#fff;padding:2.4rem 1.5rem 2rem;text-align:center;}
+.hero h1{font-size:1.9rem;letter-spacing:.5px;}
+.hero p{margin:.3rem 0 0;opacity:.95;font-size:1rem;}
+.hero .meta{margin-top:1rem;font-size:.85rem;opacity:.85;}
+nav.tabs{position:sticky;top:0;z-index:50;background:#fff;border-bottom:2px solid var(--teal);display:flex;overflow-x:auto;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+nav.tabs button{flex:1 0 auto;padding:.9rem .8rem;background:none;border:none;font-size:.85rem;font-weight:600;color:var(--gray);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:.15s;}
+nav.tabs button:hover{color:var(--teal-dark);background:var(--teal-light);}
+nav.tabs button.active{color:var(--teal-dark);border-bottom:3px solid var(--teal);background:var(--teal-light);}
+main{max-width:980px;margin:0 auto;padding:1.5rem 1.2rem 4rem;}
+.tab-content{display:none;animation:fade .3s;}
+.tab-content.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.unit-title{color:var(--teal-dark);border-bottom:2px solid var(--teal-light);padding-bottom:.5rem;margin-bottom:1.2rem;font-size:1.4rem;}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem;margin-bottom:1.3rem;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.card h3{color:var(--teal-dark);font-size:1.1rem;display:flex;align-items:center;gap:.5rem;}
+.card h3 .num{background:var(--teal);color:#fff;width:1.7rem;height:1.7rem;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;}
+.theory{font-size:.93rem;color:var(--ink);}
+.theory ul{margin:.4rem 0;padding-left:1.2rem;}
+.theory li{margin-bottom:.3rem;}
+.tag{display:inline-block;background:var(--teal-light);color:var(--teal-dark);font-size:.72rem;font-weight:700;padding:.15rem .55rem;border-radius:20px;margin-bottom:.5rem;letter-spacing:.3px;}
+.game-box{background:var(--teal-light);border-radius:10px;padding:1rem;margin-top:.9rem;}
+.game-box h4{color:var(--teal-dark);font-size:.95rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
+button.act{background:var(--teal);color:#fff;border:none;padding:.5rem 1rem;border-radius:8px;font-size:.85rem;cursor:pointer;font-weight:600;transition:.15s;}
+button.act:hover{background:var(--teal-dark);}
+button.act:disabled{background:#B7C7C9;cursor:default;}
+.feedback{margin-top:.6rem;font-size:.87rem;font-weight:600;padding:.5rem .7rem;border-radius:8px;display:none;}
+.feedback.ok{background:#E4F6EA;color:var(--green);display:block;}
+.feedback.bad{background:#FBE7E7;color:var(--red);display:block;}
+.choices{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0;}
+.choice-btn{background:#fff;border:2px solid var(--teal);color:var(--teal-dark);padding:.4rem .8rem;border-radius:20px;font-size:.83rem;cursor:pointer;font-weight:600;}
+.choice-btn:hover{background:var(--teal);color:#fff;}
+.choice-btn.correct{background:var(--green);border-color:var(--green);color:#fff;}
+.choice-btn.wrong{background:var(--red);border-color:var(--red);color:#fff;}
+.drop-zone{border:2px dashed var(--teal);border-radius:8px;min-height:44px;padding:.4rem;margin:.3rem 0;background:#fff;font-size:.82rem;}
+.drop-zone.over{background:var(--teal-light);}
+.drop-zone .placed{background:var(--teal);color:#fff;padding:.25rem .6rem;border-radius:14px;display:inline-block;margin:.15rem;font-size:.78rem;}
+.drag-pool{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.7rem;}
+.drag-item{background:#fff;border:2px solid var(--teal-dark);color:var(--teal-dark);padding:.35rem .7rem;border-radius:16px;font-size:.8rem;cursor:grab;font-weight:600;user-select:none;}
+.drag-item:active{cursor:grabbing;}
+.drag-item.gone{opacity:.25;pointer-events:none;}
+.zone-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.zone-grid .zlabel{font-weight:700;color:var(--teal-dark);font-size:.8rem;margin-bottom:.2rem;}
+@media(max-width:600px){.zone-grid{grid-template-columns:1fr;}}
+.order-list{list-style:none;padding:0;margin:.6rem 0;}
+.order-list li{background:#fff;border:1px solid var(--teal);border-radius:8px;padding:.5rem .7rem;margin-bottom:.4rem;cursor:grab;font-size:.83rem;display:flex;align-items:center;gap:.5rem;}
+.order-list li .handle{color:var(--teal);font-weight:700;}
+.order-list li.dragging{opacity:.4;}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+.match-col{display:flex;flex-direction:column;gap:.4rem;}
+.match-item{background:#fff;border:2px solid var(--teal);border-radius:8px;padding:.45rem .6rem;font-size:.8rem;cursor:pointer;text-align:left;}
+.match-item.selected{background:var(--teal);color:#fff;}
+.match-item.matched{background:var(--green);border-color:var(--green);color:#fff;opacity:.7;cursor:default;}
+.slider-row{display:flex;align-items:center;gap:.7rem;margin:.5rem 0;flex-wrap:wrap;}
+.semaforo{display:flex;gap:.5rem;align-items:center;}
+.luz{width:26px;height:26px;border-radius:50%;background:#ddd;}
+.luz.on-red{background:var(--red);}
+.luz.on-amber{background:var(--amber);}
+.luz.on-green{background:var(--green);}
+.score-badge{position:fixed;bottom:14px;right:14px;background:var(--teal-dark);color:#fff;padding:.5rem 1rem;border-radius:24px;font-size:.8rem;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:60;}
+.synthesis{background:var(--teal-light);border-left:4px solid var(--teal);border-radius:0 10px 10px 0;padding:1rem 1.2rem;margin-top:1rem;}
+.case-box{background:#F7FBFB;border:1px solid var(--teal);border-radius:10px;padding:.9rem 1.1rem;margin:.8rem 0;}
+.case-box .case-tag{color:var(--teal-dark);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.35rem;display:block;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media(max-width:640px){.two-col{grid-template-columns:1fr;}}
+.mini-table{width:100%;border-collapse:collapse;font-size:.82rem;margin:.5rem 0;}
+.mini-table th{background:var(--teal);color:#fff;padding:.4rem .6rem;text-align:left;}
+.mini-table td{padding:.4rem .6rem;border-bottom:1px solid var(--line);vertical-align:top;}
+.mini-table tr:nth-child(even){background:#F7FBFB;}
+.quote-box{font-style:italic;color:var(--teal-dark);border-left:3px solid var(--teal);padding:.4rem .8rem;margin:.6rem 0;font-size:.9rem;background:var(--teal-light);}
+details.more{margin-top:.5rem;}
+details.more summary{cursor:pointer;color:var(--teal-dark);font-weight:700;font-size:.83rem;}
+details.more[open] summary{margin-bottom:.4rem;}
+
+/* --- Interactive theory components --- */
+.predict-box{background:#FFF8E8;border:1px dashed var(--amber);border-radius:10px;padding:.7rem .9rem;margin:.7rem 0;font-size:.85rem;}
+.predict-box .p-q{font-weight:700;color:#8a6400;margin-bottom:.4rem;}
+.predict-reveal{display:none;margin-top:.5rem;background:#fff;border-radius:8px;padding:.6rem .8rem;font-size:.83rem;border-left:3px solid var(--amber);}
+.predict-reveal.shown{display:block;}
+.flip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.6rem;margin:.7rem 0;}
+.flip-card{perspective:1000px;height:120px;cursor:pointer;}
+.flip-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d;}
+.flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+.flip-front,.flip-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:10px;padding:.6rem;display:flex;align-items:center;justify-content:center;text-align:center;}
+.flip-front{background:var(--teal);color:#fff;font-weight:700;font-size:.85rem;}
+.flip-back{background:var(--teal-light);color:var(--ink);transform:rotateY(180deg);overflow-y:auto;font-size:.74rem;line-height:1.35;}
+.flip-hint{font-size:.72rem;color:var(--gray);text-align:center;margin-top:-.3rem;margin-bottom:.4rem;}
+.accord{margin:.6rem 0;}
+.accord-item{border:1px solid var(--line);border-radius:8px;margin-bottom:.4rem;overflow:hidden;}
+.accord-head{background:var(--teal-light);padding:.55rem .8rem;font-weight:700;color:var(--teal-dark);cursor:pointer;display:flex;justify-content:space-between;font-size:.85rem;}
+.accord-head .plus{transition:.2s;}
+.accord-item.open .accord-head .plus{transform:rotate(45deg);}
+.accord-body{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+.accord-body-inner{padding:.6rem .9rem;font-size:.82rem;}
+.accord-item.open .accord-body{max-height:500px;}
+.accord-item.open .accord-head{background:var(--teal);color:#fff;}
+.hotspot-flow{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.8rem 0;align-items:center;}
+.hotspot{background:var(--teal);color:#fff;padding:.55rem .9rem;border-radius:8px;cursor:pointer;font-weight:700;font-size:.8rem;text-align:center;flex:1 1 110px;transition:.15s;}
+.hotspot:hover{background:var(--teal-dark);}
+.hotspot.active{background:var(--amber);color:var(--ink);}
+.hotspot-arrow{color:var(--teal);font-weight:700;font-size:1.1rem;}
+.hotspot-detail{background:var(--teal-light);border-radius:10px;padding:.7rem 1rem;margin-top:.5rem;font-size:.84rem;min-height:44px;}
+.toggle-switch{display:flex;gap:.4rem;margin-bottom:.6rem;flex-wrap:wrap;}
+.toggle-btn{flex:1 1 auto;padding:.45rem .8rem;border:2px solid var(--teal);background:#fff;color:var(--teal-dark);border-radius:8px;font-weight:700;cursor:pointer;font-size:.82rem;}
+.toggle-btn.active{background:var(--teal);color:#fff;}
+.toggle-panel{background:var(--teal-light);border-radius:10px;padding:.75rem 1rem;font-size:.84rem;}
+.mini-classify{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0;}
+.mc-btn{background:#fff;border:2px solid var(--teal);color:var(--teal-dark);padding:.35rem .7rem;border-radius:16px;font-size:.78rem;cursor:pointer;font-weight:600;}
+.mc-btn.correct{background:var(--green);border-color:var(--green);color:#fff;}
+.mc-btn.wrong{background:var(--red);border-color:var(--red);color:#fff;}
+.build-flow{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin:.5rem 0;min-height:44px;background:#fff;border:2px dashed var(--teal);border-radius:8px;padding:.5rem;}
+.build-flow .step-chip{background:var(--teal);color:#fff;padding:.3rem .6rem;border-radius:14px;font-size:.75rem;font-weight:600;}
+.build-flow .arrow{color:var(--teal-dark);font-weight:700;}
+.practice-box{background:#FFF4E9;border:2px solid var(--amber);border-radius:10px;padding:1rem;margin-top:.9rem;}
+.practice-box h4{color:#8a6400;font-size:.95rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;}
+textarea.reflect{width:100%;border:1px solid var(--line);border-radius:8px;padding:.5rem .6rem;font-size:.83rem;font-family:inherit;resize:vertical;min-height:50px;margin-bottom:.5rem;}
+.reflect-label{font-size:.78rem;font-weight:700;color:var(--teal-dark);margin-bottom:.15rem;display:block;}
+.kpi-input-row{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:.5rem 0;}
+.kpi-input-row input[type=number]{width:100px;padding:.4rem .5rem;border:1px solid var(--line);border-radius:6px;font-size:.85rem;}
+.smart-builder{display:grid;grid-template-columns:1fr;gap:.5rem;margin:.6rem 0;}
+.smart-preview{background:#fff;border:2px dashed var(--teal);border-radius:8px;padding:.7rem .9rem;margin-top:.5rem;font-size:.85rem;min-height:40px;}
+.kpi-dashboard{width:100%;border-collapse:collapse;font-size:.82rem;margin:.5rem 0;}
+.kpi-dashboard th{background:var(--teal-dark);color:#fff;padding:.4rem .5rem;}
+.kpi-dashboard td{padding:.4rem .5rem;border-bottom:1px solid var(--line);}
+.kpi-dashboard .color-choices{display:flex;gap:.3rem;}
+.biblio{font-size:.78rem;color:var(--gray);margin-top:.6rem;}
+.biblio li{margin-bottom:.25rem;}
+input[type=text]{padding:.4rem .6rem;border:1px solid var(--line);border-radius:6px;font-size:.83rem;width:100%;max-width:280px;}
+.final-quiz-q{margin-bottom:1.1rem;}
+.progress-wrap{background:#eee;border-radius:20px;height:8px;overflow:hidden;margin-bottom:1rem;}
+.progress-bar{background:var(--teal);height:100%;width:0%;transition:.3s;}
+.intro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;margin-top:1rem;}
+.intro-item{background:var(--teal-light);border-radius:10px;padding:.9rem;text-align:center;font-size:.83rem;font-weight:600;color:var(--teal-dark);}
+.intro-item .n{font-size:1.6rem;display:block;color:var(--teal);}
+footer{text-align:center;color:var(--gray);font-size:.78rem;padding:1.5rem;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>GESTIÓN POR PROCESOS</h1>
+  <p>Clase de repaso general · Unidades 1 a 4</p>
+  <div class="meta">Ing. Marcela Medina B., M.Sc. &nbsp;·&nbsp; mamedina@ecotec.edu.ec</div>
+</div>
+
+<nav class="tabs" id="tabs">
+  <button class="tab-btn active" data-tab="inicio">Inicio</button>
+  <button class="tab-btn" data-tab="u1">Unidad 1</button>
+  <button class="tab-btn" data-tab="u2">Unidad 2</button>
+  <button class="tab-btn" data-tab="u3">Unidad 3</button>
+  <button class="tab-btn" data-tab="u4">Unidad 4</button>
+  <button class="tab-btn" data-tab="final">Repaso Final</button>
+</nav>
+
+<div class="score-badge">⭐ Puntaje: <span id="scoreTotal">0</span></div>
+
+<main>
+
+<!-- ================= INICIO ================= -->
+<section class="tab-content active" id="inicio">
+  <h2 class="unit-title">Bienvenida al repaso</h2>
+  <div class="card">
+    <p class="theory">Esta sesión integra todo lo revisado durante el curso de <b>Gestión por Procesos</b>: desde los conceptos fundamentales de proceso y sistema, pasando por el mapeo y la jerarquización, la gestión documental y BPMN, hasta los indicadores clave de desempeño. Cada unidad combina una síntesis teórica breve con una actividad interactiva para reforzar el aprendizaje.</p>
+    <div class="intro-grid">
+      <div class="intro-item"><span class="n">4</span>Unidades</div>
+      <div class="intro-item"><span class="n">14</span>Temas</div>
+      <div class="intro-item"><span class="n">14+</span>Actividades interactivas</div>
+      <div class="intro-item"><span class="n">1</span>Repaso final integrador</div>
+    </div>
+  </div>
+  <div class="card">
+    <h3><span class="num">i</span>¿Cómo navegar la clase?</h3>
+    <div class="theory">
+      <ul>
+        <li>Usa la barra superior para moverte entre unidades.</li>
+        <li>En cada tema encontrarás una síntesis teórica y un juego para practicar.</li>
+        <li>Tu puntaje se acumula en la esquina inferior derecha — ¡no hay límite de tiempo, tómate el tiempo que necesites!</li>
+        <li>Al final, un repaso integrador combina preguntas de las 4 unidades.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= UNIDAD 1 ================= -->
+<section class="tab-content" id="u1">
+  <h2 class="unit-title">Unidad 1 · Fundamentos de la Gestión por Procesos</h2>
+
+  <!-- 1.1 -->
+  <div class="card">
+    <h3><span class="num">1.1</span>Aspectos Generales</h3>
+    <span class="tag">PROCESO vs GESTIÓN POR PROCESOS</span>
+    <div class="theory">
+      <p><b>Proceso:</b> serie de actividades interrelacionadas o interactuantes que transforman insumos (recursos) en resultados (productos o servicios) para alcanzar un objetivo específico.</p>
+      <p><b>Gestión por Procesos:</b> práctica de administrar y mejorar los procesos de una organización para aumentar la eficiencia, efectividad y adaptabilidad. Implica analizar, diseñar, implementar, controlar y mejorar continuamente los procesos.</p>
+
+      <div class="predict-box">
+        <div class="p-q">🤔 Antes de seguir: piensa en "hornear un pastel para vender en tu negocio". ¿Qué preguntas adicionales aparecen que NO existían al hornearlo solo para tu familia?</div>
+        <button class="act" onclick="togglePredict('rv11')" style="font-size:.78rem;padding:.35rem .7rem;">Ver la respuesta</button>
+        <div class="predict-reveal" id="rv11">Aparecen preguntas como: ¿qué receta seguir?, ¿cuántos ingredientes se necesitan?, ¿cómo se transporta al punto de venta?, ¿cuál es el costo por ingrediente vs. el precio final? Justamente responder a estas preguntas de forma sistemática y repetible es lo que distingue un <b>proceso</b> (hornear) de la <b>Gestión por Procesos</b> (administrar el negocio del pastel).</div>
+      </div>
+
+      <div class="case-box">
+        <span class="case-tag">Ejemplo aplicado · Crédito de consumo</span>
+        Proceso: solicitar el crédito → analizar el buró de crédito → otorgar la línea → firmar el contrato → transferir el dinero. Gestionar ese proceso implica definir quién analiza el récord crediticio, cuál es la capacidad de pago del cliente, quién es el asesor responsable, cuál es el monto y el plazo — es decir, estandarizar y controlar el "cómo" para que el resultado sea consistente cada vez.
+      </div>
+
+      <p><b>Importancia de la Gestión por Procesos</b> — haz clic en cada beneficio para confirmarlo:</p>
+      <div class="accord" id="acc11imp"></div>
+
+      <p><b>Objetivos de la Gestión por Procesos</b> — voltea cada tarjeta para ver su descripción:</p>
+      <div class="flip-grid" id="flip11"></div>
+      <div class="flip-hint">👆 Haz clic sobre una tarjeta para voltearla</div>
+
+      <div class="case-box">
+        <span class="case-tag">Caso práctico · Toyota Production System (TPS)</span>
+        Toyota es un ejemplo paradigmático de gestión por procesos, sostenido en 4 pilares: <b>Philosophy</b> (pensamiento a largo plazo), <b>Processes</b> (flujo continuo, eliminación de desperdicio), <b>People and Partners</b> (respeto, desarrollo y reto al personal) y <b>Problem solving</b> (mejora continua y aprendizaje organizacional). Al adoptar Lean Manufacturing, Just-in-Time, Kaizen y Andon, Toyota logró un sistema de producción eficiente y de alta calidad, fundamental para su ventaja competitiva a largo plazo.
+      </div>
+
+      <p><b>Elementos clave y ciclo de vida</b> — explora cada bloque:</p>
+      <div class="accord" id="acc11ciclo"></div>
+    </div>
+    <div class="game-box">
+      <h4>🎯 Clasifica: ¿Proceso o Gestión por Procesos?</h4>
+      <p style="font-size:.82rem;margin:.2rem 0 .6rem;">Arrastra cada frase a la categoría correcta.</p>
+      <div class="drag-pool" id="pool11">
+        <div class="drag-item" draggable="true" data-ans="proceso">Mezclar los ingredientes del pastel</div>
+        <div class="drag-item" draggable="true" data-ans="gestion">Analizar el costo por ingrediente vs. precio final</div>
+        <div class="drag-item" draggable="true" data-ans="proceso">Otorgar la línea de crédito al cliente</div>
+        <div class="drag-item" draggable="true" data-ans="gestion">Definir el asesor responsable y mejorar el flujo de aprobación</div>
+        <div class="drag-item" draggable="true" data-ans="proceso">Firmar el contrato de obligaciones crediticias</div>
+        <div class="drag-item" draggable="true" data-ans="gestion">Estandarizar el tiempo máximo de aprobación en 24 horas</div>
+      </div>
+      <div class="zone-grid">
+        <div><div class="zlabel">Proceso</div><div class="drop-zone" data-zone="proceso" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Gestión por Procesos</div><div class="drop-zone" data-zone="gestion" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+      </div>
+      <button class="act" onclick="checkDrag('u1_1',['pool11'])">Comprobar</button>
+      <div class="feedback" id="fb_u1_1"></div>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: ordena el proceso real</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;">Una tienda online recibe un reclamo porque el producto llegó dañado. Ordena los pasos del proceso de atención del reclamo (arriba = primer paso):</p>
+      <ul class="order-list" id="order11b">
+        <li draggable="true" data-correct="2"><span class="handle">⋮⋮</span> Inspeccionar el producto devuelto y evidenciar el daño</li>
+        <li draggable="true" data-correct="0"><span class="handle">⋮⋮</span> Recibir el reclamo formal del cliente</li>
+        <li draggable="true" data-correct="4"><span class="handle">⋮⋮</span> Notificar la resolución y compensación al cliente</li>
+        <li draggable="true" data-correct="1"><span class="handle">⋮⋮</span> Registrar el caso y asignar un responsable</li>
+        <li draggable="true" data-correct="3"><span class="handle">⋮⋮</span> Determinar responsabilidad (fabricante, transporte o embalaje)</li>
+      </ul>
+      <button class="act" onclick="checkOrder('order11b','u1_1b')">Comprobar orden</button>
+      <div class="feedback" id="fb_u1_1b"></div>
+    </div>
+  </div>
+
+  <!-- 1.2 -->
+  <div class="card">
+    <h3><span class="num">1.2</span>Teoría Sistémica</h3>
+    <span class="tag">SISTEMAS ABIERTOS</span>
+    <div class="theory">
+      <p><b>Sistema:</b> conjunto de elementos interrelacionados e interdependientes que funcionan como un todo para lograr un propósito. Elementos clave: <b>componentes</b> (partes individuales), <b>relaciones/interacciones</b> (cómo se conectan), <b>propósito/objetivo</b> (meta común) y <b>límites</b> (lo que separa al sistema de su entorno).</p>
+
+      <table class="mini-table">
+        <tr><th>Sistemas Cerrados</th><th>Sistemas Abiertos</th></tr>
+        <tr><td>No interactúan con su entorno.</td><td>Interactúan dinámicamente con su entorno.</td></tr>
+        <tr><td>Tienden al aislamiento y la entropía.</td><td>Intercambian energía, información y recursos.</td></tr>
+        <tr><td>Ejemplo: un termostato ideal (teórico).</td><td>Se adaptan y evolucionan. Ejemplo: ¡una organización!</td></tr>
+      </table>
+
+      <p><b>La Organización como Sistema Abierto</b> — haz clic en cada elemento del modelo entrada-proceso-salida:</p>
+      <div class="hotspot-flow" id="hs12"></div>
+      <div class="hotspot-detail" id="hsd12"></div>
+
+      <p><b>Principios básicos de la Teoría Sistémica:</b></p>
+      <ul>
+        <li><b>Holismo y visión integradora:</b> los sistemas deben verse como un todo integrado; las partes no se entienden por separado de la totalidad.</li>
+        <li><b>Interdependencia y relaciones entre partes:</b> los elementos están interconectados y dependen unos de otros.</li>
+        <li><b>Retroalimentación y adaptabilidad:</b> mecanismo para ajustar y mejorar continuamente los sistemas.</li>
+        <li><b>Jerarquía de sistemas:</b> un sistema puede ser parte de sistemas más grandes (suprasistemas) o contener sistemas más pequeños (subsistemas).</li>
+      </ul>
+
+      <p><b>Propiedades clave de los sistemas abiertos</b> — voltea cada tarjeta:</p>
+      <div class="flip-grid" id="flip12prop"></div>
+      <div class="flip-hint">👆 Haz clic sobre una tarjeta para voltearla</div>
+
+      <p><b>Retroalimentación (Feedback)</b> — concepto central en la Teoría General de Sistemas de Bertalanffy. Explora los dos tipos:</p>
+      <div id="tg12fb"></div>
+
+      <div class="predict-box">
+        <div class="p-q">🤔 Reto: "Las ventas de un producto suben, y la empresa decide invertir más en su producción." ¿Qué tipo de retroalimentación es esta?</div>
+        <div class="choices"><button class="choice-btn" onclick="checkPredictChoice(this,true,'rv12')">Positiva</button><button class="choice-btn" onclick="checkPredictChoice(this,false,'rv12')">Negativa</button></div>
+        <div class="predict-reveal" id="rv12">Correcto: es <b>retroalimentación positiva</b> — amplifica una tendencia existente (más éxito → más inversión), acelerando el crecimiento.</div>
+      </div>
+
+      <p><b>Pensamiento sistémico en la práctica, ventajas y limitaciones</b> — explora cada bloque:</p>
+      <div class="accord" id="acc12"></div>
+
+      <div class="case-box">
+        <span class="case-tag">Caso práctico · FedEx Corporation</span>
+        FedEx trata su red global de transporte como un sistema integrado: recogida, transporte, clasificación y entrega contribuyen a un mismo objetivo (<b>holismo</b>). La eficiencia de la clasificación depende de la precisión de la recogida (<b>interdependencia</b>). Usa datos en tiempo real para ajustar operaciones (<b>retroalimentación y adaptabilidad</b>), y cada centro de distribución o modo de transporte funciona como un sistema dentro del sistema global (<b>jerarquía de sistemas</b>). Resultado: estándares de excelencia, menores tiempos y costos, y adaptabilidad ante fluctuaciones del mercado.
+      </div>
+      <div class="quote-box">"Vivimos en un mundo VUCA: Volátil, Incierto, Complejo y Ambiguo." — el pensamiento sistémico es la herramienta para navegarlo.</div>
+    </div>
+    <div class="game-box">
+      <h4>❓ Verdadero o Falso</h4>
+      <div id="vf12"></div>
+      <button class="act" onclick="checkVF('vf12','u1_2')">Comprobar</button>
+      <div class="feedback" id="fb_u1_2"></div>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: diagnóstico sistémico</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;">Empareja cada síntoma real de una empresa con el concepto sistémico que lo explica:</p>
+      <div class="match-grid" id="matchDiag12"></div>
+    </div>
+  </div>
+
+  <!-- 1.3 -->
+  <div class="card">
+    <h3><span class="num">1.3</span>Estructuras Organizacionales</h3>
+    <span class="tag">TRADICIONAL vs MODERNA</span>
+    <div class="theory">
+      <p><b>Estructura organizacional:</b> define cómo se dividen, agrupan y coordinan las actividades dentro de una organización. Influye en la eficiencia operativa, la cultura organizacional y la capacidad de adaptarse a cambios.</p>
+
+      <p><b>Compara ambos modelos</b> — haz clic para alternar:</p>
+      <div id="tg13"></div>
+
+      <p><b>Ejemplos concretos</b> — voltea cada tarjeta para ver definición, ventajas y desventajas:</p>
+      <div class="flip-grid" id="flip13ej"></div>
+      <div class="flip-hint">👆 Haz clic sobre una tarjeta para voltearla</div>
+
+      <p><b>Comparación por dimensión</b> — explora cada una:</p>
+      <div class="accord" id="acc13dim"></div>
+
+      <details class="more">
+        <summary>Ver impacto en la Gestión por Procesos y factor generacional</summary>
+        <table class="mini-table">
+          <tr><th></th><th>Tradicional</th><th>Moderna</th></tr>
+          <tr><td>Integración</td><td>Procesos estandarizados, foco en eficiencia y control.</td><td>Procesos flexibles y adaptativos, foco en innovación y colaboración.</td></tr>
+          <tr><td>Beneficios</td><td>Claridad de responsabilidad, estabilidad, previsibilidad.</td><td>Innovación, agilidad, mejor colaboración, adaptabilidad.</td></tr>
+          <tr><td>Desafíos</td><td>Rigidez, dificultad para adaptarse, posible falta de innovación.</td><td>Complejidad en coordinación, posibles conflictos, requiere cultura de equipo fuerte.</td></tr>
+        </table>
+        <p>Ninguna estructura es "mejor" en sí misma: ambas pueden trabajar en armonía considerando el <b>factor generacional</b> presente en las organizaciones (distintas cohortes conviviendo con expectativas distintas de jerarquía y comunicación).</p>
+      </details>
+      <div class="practice-box">
+        <h4>🧪 Aplícalo: ¿qué estructura recomendarías?</h4>
+        <p style="font-size:.83rem;margin-bottom:.3rem;">Elige la estructura más adecuada para cada empresa y comprueba tu razonamiento:</p>
+        <div id="mc13"></div>
+      </div>
+    </div>
+    <div class="game-box">
+      <h4>🗂️ Arrastra cada característica a su estructura</h4>
+      <div class="drag-pool" id="pool13">
+        <div class="drag-item" draggable="true" data-ans="trad">Centralización de decisiones</div>
+        <div class="drag-item" draggable="true" data-ans="mod">Autonomía en los equipos</div>
+        <div class="drag-item" draggable="true" data-ans="trad">Comunicación formal y vertical</div>
+        <div class="drag-item" draggable="true" data-ans="mod">Colaboración en red, alta agilidad</div>
+        <div class="drag-item" draggable="true" data-ans="trad">Resistencia al cambio, rigidez</div>
+      </div>
+      <div class="zone-grid">
+        <div><div class="zlabel">Estructura Tradicional</div><div class="drop-zone" data-zone="trad" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Estructura Moderna</div><div class="drop-zone" data-zone="mod" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+      </div>
+      <button class="act" onclick="checkDrag('u1_3',['pool13'])">Comprobar</button>
+      <div class="feedback" id="fb_u1_3"></div>
+    </div>
+  </div>
+
+  <!-- 1.4 -->
+  <div class="card">
+    <h3><span class="num">1.4</span>Enfoque por Procesos y Mejora Continua</h3>
+    <span class="tag">PHVA + MARCOS DE REFERENCIA</span>
+    <div class="theory">
+      <p><i>¿Los resultados de una empresa se deben más a las personas o a los procesos que siguen? No hay respuesta única — pero el debate ilustra el cambio de paradigma.</i></p>
+
+      <p><b>Gestión Funcional vs. Gestión por Procesos</b> — compara ambos paradigmas:</p>
+      <div id="tg14func"></div>
+
+      <p><b>Ciclo PHVA aplicado a procesos</b> — haz clic en cada fase para recorrer el ciclo:</p>
+      <div class="hotspot-flow" id="hs14phva"></div>
+      <div class="hotspot-detail" id="hsd14phva"></div>
+
+      <p><b>Marcos de referencia internacionales</b> — voltea cada tarjeta:</p>
+      <div class="flip-grid" id="flip14marcos"></div>
+      <div class="flip-hint">👆 Haz clic sobre una tarjeta para voltearla</div>
+
+      <p><b>¿Qué marco usarías?</b> — elige el marco correcto para cada caso antes de revelar la respuesta:</p>
+      <div id="mc14"></div>
+
+      <p><b>Niveles de madurez organizacional</b> — desliza para explorar cada nivel:</p>
+      <div class="slider-row">
+        <input type="range" min="1" max="5" value="1" id="madRange" oninput="updateMadurez()" style="flex:1;">
+        <span id="madVal" style="font-weight:700;min-width:120px;"></span>
+      </div>
+      <div class="hotspot-detail" id="madDetail"></div>
+
+      <div class="case-box">
+        <span class="case-tag">Caso integrador · La Clínica del Buen Proceso</span>
+        Síntomas: espera de 4 horas para una cita de 20 minutos; 30% de recetas con errores de transcripción; cada departamento culpa al otro; no existe ningún indicador de satisfacción.<br>
+        Preguntas para analizar: ¿qué paradigma predomina (funcional o por procesos)? ¿cómo aplicarían el PHVA a las esperas? ¿qué marco de referencia recomendarían? ¿en qué nivel de madurez está la clínica?
+      </div>
+      <div class="quote-box">"La mejora continua no es un destino. Es la forma en que una organización decide existir."</div>
+    </div>
+    <div class="game-box">
+      <h4>🔗 Empareja el caso con el marco de referencia ideal</h4>
+      <div class="match-grid" id="match14"></div>
+      <p class="feedback" id="fb_u1_4" style="display:block;background:transparent;color:var(--gray);font-weight:400;">Selecciona una tarjeta de la izquierda y su pareja a la derecha.</p>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: resuelve un caso con PHVA</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;"><b>Caso:</b> El tiempo de respuesta a correos de atención al cliente supera las 48 horas. Escribe tu propia propuesta para cada fase (aunque sea breve) y luego compárala con un ejemplo posible:</p>
+      <span class="reflect-label">P · Planear</span>
+      <textarea class="reflect" id="phvaP" placeholder="¿Qué mejorarías y cómo lo medirías?"></textarea>
+      <span class="reflect-label">H · Hacer</span>
+      <textarea class="reflect" id="phvaH" placeholder="¿Qué harían primero, a modo de piloto?"></textarea>
+      <span class="reflect-label">V · Verificar</span>
+      <textarea class="reflect" id="phvaV" placeholder="¿Cómo medirían si funcionó?"></textarea>
+      <span class="reflect-label">A · Actuar</span>
+      <textarea class="reflect" id="phvaA" placeholder="¿Cómo escalarían o ajustarían la solución?"></textarea>
+      <button class="act" onclick="togglePredict('phvaReveal')">Comparar con un ejemplo posible</button>
+      <div class="predict-reveal" id="phvaReveal">
+        <b>P:</b> Medir el tiempo actual de respuesta por agente y definir la meta (ej. &lt;24h). <b>H:</b> Pilotar un sistema de tickets con priorización automática en un equipo pequeño. <b>V:</b> Comparar el tiempo promedio antes/después durante 2 semanas. <b>A:</b> Si mejora, extenderlo a todo el equipo y documentar el nuevo procedimiento; si no, ajustar las reglas de priorización.
+      </div>
+    </div>
+  </div>
+
+  <div class="synthesis">
+    <b>Síntesis Unidad 1:</b> La gestión por procesos transforma la mirada funcional (silos) en una mirada de flujo de valor centrada en el cliente. Se apoya en la teoría sistémica (la organización como sistema abierto), se adapta a estructuras tradicionales o modernas, y se sostiene con el ciclo PHVA y marcos como ISO 9001, Lean o Six Sigma para escalar en madurez.
+  </div>
+</section>
+
+<!-- ================= UNIDAD 2 ================= -->
+<section class="tab-content" id="u2">
+  <h2 class="unit-title">Unidad 2 · Mapeo, Jerarquización y Cadena de Valor</h2>
+
+  <!-- 2.1 -->
+  <div class="card">
+    <h3><span class="num">2.1</span>Mapeo de Procesos</h3>
+    <span class="tag">SIPOC</span>
+    <div class="theory">
+      <p><b>Mapeo de Procesos:</b> metodología para representar gráficamente cómo se llevan a cabo las actividades dentro de una organización, mostrando el flujo de trabajo, las interacciones entre actividades y las decisiones tomadas.</p>
+      <p><b>Importancia:</b> da una representación visual y detallada de las actividades; permite identificar áreas de mejora, eliminar redundancias, optimizar flujos y asegurar la consistencia operativa; facilita la comunicación entre equipos y la estandarización de prácticas.</p>
+
+      <p><b>Beneficios:</b></p>
+      <ul>
+        <li>Mejora la eficiencia operativa al identificar cuellos de botella y tiempos de espera.</li>
+        <li>Aumenta la calidad al estandarizar prácticas y reducir errores.</li>
+        <li>Facilita la capacitación del personal al clarificar roles y responsabilidades.</li>
+        <li>Permite una gestión más efectiva del cambio organizacional.</li>
+      </ul>
+
+      <details class="more">
+        <summary>Ver los 7 elementos para mapear un proceso</summary>
+        <ul>
+          <li>Seleccionar y definir claramente el proceso específico a mapear.</li>
+          <li>Representar visualmente el flujo con símbolos y diagramas estándar.</li>
+          <li>Identificar y describir las actividades individuales, su secuencia y relación.</li>
+          <li>Identificar personas o roles involucrados y sus responsabilidades.</li>
+          <li>Identificar entradas (inputs) y salidas (outputs) del proceso.</li>
+          <li>Identificar interacciones y decisiones que afectan el flujo de trabajo.</li>
+          <li>Documentar cada actividad: pasos, criterios de éxito, tiempos de ejecución.</li>
+        </ul>
+      </details>
+
+      <p><b>Diagrama SIPOC</b> — herramienta clave de mapeo. Haz clic en cada letra:</p>
+      <div class="hotspot-flow" id="hs21sipoc"></div>
+      <div class="hotspot-detail" id="hsd21sipoc"></div>
+
+      <div class="case-box">
+        <span class="case-tag">Ejemplo · Empresa certificada ISO 9001:2015</span>
+        El mapeo identifica las <b>entradas</b> (grupos de interés e insumos asociados), clasifica los <b>tipos de procesos</b> de forma general, y documenta las <b>salidas</b> (resultados/outputs de transformar los inputs de las partes interesadas).
+      </div>
+
+      <p><b>Herramientas comunes:</b> <b>Bizagi Modeler</b> (software gratuito para modelado con estándar BPMN), <b>Lucidchart</b> (plataforma colaborativa con plantillas), <b>Microsoft Visio</b> (diagramas y flujogramas intuitivos, parte de Office).</p>
+    </div>
+    <div class="game-box">
+      <h4>📦 Construye el SIPOC de un proceso de matrícula</h4>
+      <div class="drag-pool" id="pool21">
+        <div class="drag-item" draggable="true" data-ans="s">Coordinación Académica</div>
+        <div class="drag-item" draggable="true" data-ans="i">Formulario de inscripción</div>
+        <div class="drag-item" draggable="true" data-ans="p">Validar cupo y registrar en el sistema</div>
+        <div class="drag-item" draggable="true" data-ans="o">Comprobante de matrícula</div>
+        <div class="drag-item" draggable="true" data-ans="c">Estudiante</div>
+      </div>
+      <div class="zone-grid">
+        <div><div class="zlabel">Supplier</div><div class="drop-zone" data-zone="s" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Input</div><div class="drop-zone" data-zone="i" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Process</div><div class="drop-zone" data-zone="p" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Output</div><div class="drop-zone" data-zone="o" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Customer</div><div class="drop-zone" data-zone="c" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+      </div>
+      <button class="act" onclick="checkDrag('u2_1',['pool21'])">Comprobar</button>
+      <div class="feedback" id="fb_u2_1"></div>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: SIPOC de la apertura de una cuenta bancaria</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;">Empareja cada elemento real con su categoría SIPOC:</p>
+      <div class="match-grid" id="match21b"></div>
+    </div>
+  </div>
+
+  <!-- 2.2 -->
+  <div class="card">
+    <h3><span class="num">2.2</span>Jerarquización de Procesos</h3>
+    <span class="tag">ESTRATÉGICO · OPERATIVO · APOYO</span>
+    <div class="theory">
+      <p><b>Jerarquización de procesos:</b> organización de los procesos de una empresa en diferentes niveles de importancia y función, permitiendo una visión estructurada y clara del funcionamiento interno.</p>
+      <p><b>Importancia:</b> permite identificar y optimizar los procesos clave, mejorar la eficiencia y eficacia, y asegurar que todos los niveles estén alineados con los objetivos estratégicos.</p>
+
+      <p><b>Objetivos de la jerarquización</b> — voltea cada tarjeta:</p>
+      <div class="flip-grid" id="flip22obj"></div>
+      <div class="flip-hint">👆 Haz clic sobre una tarjeta para voltearla</div>
+
+      <p><b>Niveles de la jerarquización</b> — explora cada uno antes de clasificar en el juego:</p>
+      <div class="accord" id="acc22niv"></div>
+      <p>Los tres niveles trabajan en conjunto para que la organización funcione de forma coherente, alineando el día a día con la estrategia.</p>
+
+      <details class="more">
+        <summary>Ver beneficios completos y desafíos de implementación</summary>
+        <p><b>Beneficios:</b></p>
+        <ul>
+          <li>Mayor eficiencia en la ejecución de tareas → mejor productividad y menores costos.</li>
+          <li>Mejor alineación entre actividades diarias y metas estratégicas.</li>
+          <li>Mejora la rendición de cuentas, reduce conflictos, mejora coordinación.</li>
+          <li>Adaptación más rápida a cambios del mercado.</li>
+          <li>Decisiones más rápidas y basadas en información precisa.</li>
+          <li>Reduce silos organizacionales y fomenta colaboración.</li>
+          <li>Mantiene la competitividad y fomenta la innovación.</li>
+          <li>Reduce desperdicios y mejora la utilización de recursos.</li>
+        </ul>
+        <table class="mini-table">
+          <tr><th>Desafío</th><th>Estrategia de mitigación</th></tr>
+          <tr><td>Resistencia al cambio</td><td>Comunicación efectiva y participación de los empleados.</td></tr>
+          <tr><td>Complejidad en identificar y mapear procesos</td><td>Uso de herramientas de software y capacitación.</td></tr>
+          <tr><td>Integración entre departamentos</td><td>Fomentar la colaboración y comunicación transparente.</td></tr>
+          <tr><td>Cambio en la cultura organizacional</td><td>Liderazgo fuerte e iniciativas de cambio cultural.</td></tr>
+          <tr><td>Costo y recursos</td><td>Análisis costo-beneficio y priorización de iniciativas.</td></tr>
+          <tr><td>Mantenimiento y actualización</td><td>Procedimientos de revisión regular y responsabilidades asignadas.</td></tr>
+          <tr><td>Tecnología inadecuada</td><td>Evaluación/selección de herramientas y capacitación tecnológica.</td></tr>
+          <tr><td>Medición y monitoreo</td><td>Definición de KPI claros y sistema de monitoreo.</td></tr>
+        </table>
+      </details>
+      <p style="font-size:.85rem;"><i>Recuerda la Teoría Sistémica: entender el negocio como un todo es la base para jerarquizar bien los procesos.</i></p>
+    </div>
+    <div class="game-box">
+      <h4>🏷️ Clasifica cada proceso por su nivel</h4>
+      <div class="drag-pool" id="pool22">
+        <div class="drag-item" draggable="true" data-ans="est">Planificación estratégica anual</div>
+        <div class="drag-item" draggable="true" data-ans="ope">Producción de bienes o entrega del servicio</div>
+        <div class="drag-item" draggable="true" data-ans="apo">Gestión de nómina y RR.HH.</div>
+        <div class="drag-item" draggable="true" data-ans="ope">Atención directa al cliente</div>
+        <div class="drag-item" draggable="true" data-ans="apo">Soporte tecnológico (TI)</div>
+        <div class="drag-item" draggable="true" data-ans="ope">Atención de urgencias en un hospital</div>
+        <div class="drag-item" draggable="true" data-ans="est">Definición de la visión y expansión a nuevos mercados</div>
+      </div>
+      <div class="zone-grid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div><div class="zlabel">Estratégico</div><div class="drop-zone" data-zone="est" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Operativo</div><div class="drop-zone" data-zone="ope" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">De Apoyo</div><div class="drop-zone" data-zone="apo" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+      </div>
+      <button class="act" onclick="checkDrag('u2_2',['pool22'])">Comprobar</button>
+      <div class="feedback" id="fb_u2_2"></div>
+    </div>
+  </div>
+
+  <!-- 2.3 -->
+  <div class="card">
+    <h3><span class="num">2.3</span>Jerarquía por Niveles</h3>
+    <span class="tag">MACROPROCESO · PROCESO · SUBPROCESO</span>
+    <div class="theory">
+      <p>Existen dos formas de jerarquizar procesos: <b>por función</b> (enfoque) y <b>por niveles</b> (grado de detalle/abstracción).</p>
+      <p><b>Por función:</b> Estratégicos (formulación y ejecución de la estrategia a largo plazo) · Operativos/Clave (actividades diarias y rutinarias que producen bienes y servicios) · De Apoyo (servicios y soporte para garantizar eficiencia y eficacia).</p>
+
+      <p><b>Por niveles</b> — haz clic en cada uno para ver su nivel de detalle:</p>
+      <div class="hotspot-flow" id="hs23niv"></div>
+      <div class="hotspot-detail" id="hsd23niv"></div>
+
+      <div class="case-box">
+        <span class="case-tag">Ejemplo</span>
+        <b>Macroproceso:</b> Gestión de la Cadena de Suministro → <b>Proceso:</b> Adquisición de Materias Primas → <b>Subproceso:</b> Selección de Proveedores.
+      </div>
+
+      <div class="case-box">
+        <span class="case-tag">Ejercicio práctico · EcoGoods</span>
+        La empresa ficticia "EcoGoods" fabrica y vende productos ecológicos, con áreas de cadena de suministro, operaciones, producción, logística, transporte, gestión comercial, administrativa, desarrollo de productos y proveedores, y atención al cliente. El ejercicio consiste en identificar sus macroprocesos, procesos y subprocesos relevantes.
+      </div>
+
+      <p><b>Importancia de la jerarquización por niveles:</b></p>
+      <ul>
+        <li><b>Visión integral:</b> comprender cómo las actividades se interrelacionan y contribuyen a los objetivos estratégicos.</li>
+        <li><b>Gestión y optimización:</b> identificar áreas de mejora y alinear recursos con los objetivos empresariales.</li>
+        <li><b>Coordinación y control:</b> marco para coordinar esfuerzos entre niveles y áreas, asegurando un flujo de trabajo coherente.</li>
+      </ul>
+    </div>
+    <div class="game-box">
+      <h4>🔢 Ordena de mayor a menor nivel de abstracción</h4>
+      <p style="font-size:.82rem;margin:.2rem 0 .6rem;">Arrastra para ordenar (arriba = más general).</p>
+      <ul class="order-list" id="order23">
+        <li draggable="true" data-correct="2"><span class="handle">⋮⋮</span> Selección de proveedores (Subproceso)</li>
+        <li draggable="true" data-correct="0"><span class="handle">⋮⋮</span> Gestión de la Cadena de Suministro (Macroproceso)</li>
+        <li draggable="true" data-correct="1"><span class="handle">⋮⋮</span> Adquisición de materias primas (Proceso)</li>
+      </ul>
+      <button class="act" onclick="checkOrder('order23','u2_3')">Comprobar orden</button>
+      <div class="feedback" id="fb_u2_3"></div>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: clasifica el caso EcoGoods</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;">EcoGoods fabrica productos ecológicos. Clasifica cada elemento en su nivel correcto:</p>
+      <div class="drag-pool" id="pool23b">
+        <div class="drag-item" draggable="true" data-ans="macro">Gestión de Operaciones</div>
+        <div class="drag-item" draggable="true" data-ans="proc">Control de calidad del envase biodegradable</div>
+        <div class="drag-item" draggable="true" data-ans="sub">Verificación del sellado hermético del envase</div>
+        <div class="drag-item" draggable="true" data-ans="macro">Gestión Comercial</div>
+        <div class="drag-item" draggable="true" data-ans="proc">Negociación de contratos con distribuidores</div>
+      </div>
+      <div class="zone-grid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div><div class="zlabel">Macroproceso</div><div class="drop-zone" data-zone="macro" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Proceso</div><div class="drop-zone" data-zone="proc" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Subproceso</div><div class="drop-zone" data-zone="sub" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+      </div>
+      <button class="act" onclick="checkDrag('u2_3b',['pool23b'])">Comprobar</button>
+      <div class="feedback" id="fb_u2_3b"></div>
+    </div>
+  </div>
+
+  <!-- 2.4 -->
+  <div class="card">
+    <h3><span class="num">2.4</span>Cadena de Valor (Porter)</h3>
+    <span class="tag">ACTIVIDADES PRIMARIAS vs SOPORTE</span>
+    <div class="theory">
+      <p><b>Cadena de Valor (Michael Porter):</b> herramienta analítica de estrategia empresarial para identificar las actividades críticas que generan valor y las que no, permitiendo enfocar esfuerzos en las actividades más rentables o estratégicamente importantes.</p>
+
+      <p><b>Actividades Primarias vs. de Soporte</b> — alterna entre ambas categorías:</p>
+      <div id="tg24act"></div>
+
+      <p><b>Análisis de Valor</b> — beneficios de aplicarlo:</p>
+      <ul>
+        <li><b>Optimizar procesos:</b> al eliminar actividades sin valor, se reducen costos innecesarios.</li>
+        <li><b>Mejorar la calidad:</b> centrar esfuerzos en actividades que añaden valor aumenta la satisfacción y lealtad del cliente.</li>
+        <li><b>Innovación y adaptabilidad:</b> fomenta una cultura de mejora continua ante cambios del mercado y la tecnología.</li>
+        <li><b>Enfoque estratégico:</b> permite una asignación más estratégica de recursos y esfuerzos.</li>
+      </ul>
+
+      <p><b>Estrategias competitivas relacionadas</b> — voltea cada tarjeta:</p>
+      <div class="flip-grid" id="flip24est"></div>
+      <div class="flip-hint">👆 Haz clic sobre una tarjeta para voltearla</div>
+
+      <div class="case-box">
+        <span class="case-tag">Caso práctico · Nestlé</span>
+        Nestlé aplica el concepto de "Creación de Valor Compartido": integra su estrategia de negocio con impacto social y ambiental a lo largo de su cadena de valor (desde el abastecimiento de materias primas hasta el consumidor final), demostrando cómo el análisis de valor puede alinear rentabilidad con sostenibilidad.
+      </div>
+    </div>
+    <div class="game-box">
+      <h4>⚙️ Clasifica cada actividad</h4>
+      <div class="drag-pool" id="pool24">
+        <div class="drag-item" draggable="true" data-ans="prim">Transporte y distribución al cliente final</div>
+        <div class="drag-item" draggable="true" data-ans="sop">Selección y capacitación del personal</div>
+        <div class="drag-item" draggable="true" data-ans="prim">Transformación de materia prima en producto</div>
+        <div class="drag-item" draggable="true" data-ans="sop">Investigación y desarrollo tecnológico</div>
+        <div class="drag-item" draggable="true" data-ans="prim">Soporte técnico postventa</div>
+        <div class="drag-item" draggable="true" data-ans="prim">Ensamblaje de componentes en una planta de electrodomésticos</div>
+        <div class="drag-item" draggable="true" data-ans="sop">Mantenimiento de la maquinaria de producción</div>
+      </div>
+      <div class="zone-grid">
+        <div><div class="zlabel">Actividad Primaria</div><div class="drop-zone" data-zone="prim" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Actividad de Soporte</div><div class="drop-zone" data-zone="sop" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+      </div>
+      <button class="act" onclick="checkDrag('u2_4',['pool24'])">Comprobar</button>
+      <div class="feedback" id="fb_u2_4"></div>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: ¿qué estrategia competitiva es?</h4>
+      <p style="font-size:.83rem;margin-bottom:.3rem;">Lee cada situación y elige la estrategia que está aplicando la empresa:</p>
+      <div id="mc24"></div>
+    </div>
+  </div>
+
+  <div class="synthesis">
+    <b>Síntesis Unidad 2:</b> El mapeo (SIPOC, diagramas de flujo) hace visible el proceso; la jerarquización por función (estratégico/operativo/apoyo) y por niveles (macroproceso/proceso/subproceso) ordena la organización; y la Cadena de Valor de Porter conecta esos procesos con la estrategia competitiva de la empresa.
+  </div>
+</section>
+
+<!-- ================= UNIDAD 3 ================= -->
+<section class="tab-content" id="u3">
+  <h2 class="unit-title">Unidad 3 · Gestión Documental y BPMN</h2>
+
+  <!-- 3.1 -->
+  <div class="card">
+    <h3><span class="num">3.1</span>Gestión Documental</h3>
+    <span class="tag">ISO 9001:2015</span>
+    <div class="theory">
+      <p><b>Gestión Documental:</b> conjunto de actividades y técnicas dirigidas a la planificación, dirección, control y organización de los documentos a lo largo de su ciclo de vida — desde la creación y captura hasta su archivo o eliminación final.</p>
+
+      <div class="predict-box">
+        <div class="p-q">🤔 Antes de ver la lista: ¿por qué crees que una empresa sin buena gestión documental pierde tiempo y dinero?</div>
+        <button class="act" onclick="togglePredict('rv31')" style="font-size:.78rem;padding:.35rem .7rem;">Ver razones</button>
+        <div class="predict-reveal" id="rv31">
+          <ul style="margin:.2rem 0;padding-left:1.1rem;">
+            <li>Mejora la eficiencia operativa al facilitar el acceso y recuperación de información.</li>
+            <li>Asegura el cumplimiento de normativas y regulaciones legales.</li>
+            <li>Protege la información confidencial y garantiza la seguridad de los datos.</li>
+            <li>Optimiza el espacio físico y reduce costos de almacenamiento en papel.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p><b>Beneficios de una gestión documental efectiva</b> — explora cada uno:</p>
+      <div class="accord" id="acc31ben"></div>
+
+      <p><b>Norma ISO 9001:2015 — Gestión documental</b> — haz clic en cada cláusula:</p>
+      <div class="hotspot-flow" id="hs31iso"></div>
+      <div class="hotspot-detail" id="hsd31iso"></div>
+      <p style="font-size:.85rem;"><i>La gestión documental se relaciona directamente con el Ciclo de Deming (PHVA): documentar el "Hacer" y "Verificar" es lo que permite sostener la mejora en el "Actuar".</i></p>
+    </div>
+    <div class="game-box">
+      <h4>❓ Verdadero o Falso</h4>
+      <div id="vf31"></div>
+      <button class="act" onclick="checkVF('vf31','u3_1')">Comprobar</button>
+      <div class="feedback" id="fb_u3_1"></div>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: ¿control de documentos o de registros?</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;">Clasifica cada elemento real según la cláusula ISO 9001:2015 que le corresponde:</p>
+      <div class="drag-pool" id="pool31b">
+        <div class="drag-item" draggable="true" data-ans="doc">Manual de Calidad vigente</div>
+        <div class="drag-item" draggable="true" data-ans="reg">Acta de auditoría interna firmada</div>
+        <div class="drag-item" draggable="true" data-ans="doc">Procedimiento de compras actualizado</div>
+        <div class="drag-item" draggable="true" data-ans="reg">Certificado de capacitación de un empleado</div>
+      </div>
+      <div class="zone-grid">
+        <div><div class="zlabel">Control de Documentos (7.5.2)</div><div class="drop-zone" data-zone="doc" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+        <div><div class="zlabel">Control de Registros (7.5.3)</div><div class="drop-zone" data-zone="reg" ondrop="dropItem(event)" ondragover="allowDrop(event)"></div></div>
+      </div>
+      <button class="act" onclick="checkDrag('u3_1b',['pool31b'])">Comprobar</button>
+      <div class="feedback" id="fb_u3_1b"></div>
+    </div>
+  </div>
+
+  <!-- 3.2 -->
+  <div class="card">
+    <h3><span class="num">3.2</span>Jerarquía Documental</h3>
+    <span class="tag">DE LO GENERAL A LO ESPECÍFICO</span>
+    <div class="theory">
+      <p><b>Jerarquía documental:</b> sistema de organización y clasificación de documentos dentro de una empresa, agrupándolos en niveles desde lo más general hasta lo más específico.</p>
+
+      <details class="more">
+        <summary>Ver la importancia completa (7 razones)</summary>
+        <ul>
+          <li><b>Organización y accesibilidad:</b> facilita encontrar y usar los documentos, ahorrando tiempo.</li>
+          <li><b>Cumplimiento normativo:</b> asegura que los documentos requeridos estén disponibles y actualizados; facilita auditorías.</li>
+          <li><b>Control de calidad:</b> cada documento se revisa y aprueba en el nivel apropiado antes de implementarse.</li>
+          <li><b>Reducción de errores:</b> se reduce el riesgo de errores y omisiones.</li>
+          <li><b>Responsabilidad y rendimiento:</b> define quién crea, revisa y mantiene cada documento.</li>
+          <li><b>Claridad en la comunicación:</b> asegura que todos entiendan procedimientos y políticas de forma uniforme.</li>
+          <li><b>Gestión de cambios:</b> facilita actualizar la documentación cuando cambian procedimientos o políticas.</li>
+        </ul>
+      </details>
+
+      <p><b>Niveles de la jerarquía documental</b> — haz clic en cada uno (de lo general a lo específico):</p>
+      <div class="hotspot-flow" id="hs32niv"></div>
+      <div class="hotspot-detail" id="hsd32niv"></div>
+
+      <p><b>Ciclo de vida de los documentos</b> — recórrelo paso a paso:</p>
+      <div class="hotspot-flow" id="hs32ciclo"></div>
+      <div class="hotspot-detail" id="hsd32ciclo"></div>
+
+      <div class="case-box">
+        <span class="case-tag">Caso · Belcorp</span>
+        Belcorp ilustra cómo la gestión documental y la jerarquía de procesos trabajan juntas: mantener documentos actualizados y claros da origen a planes de capacitación y esclarece roles y responsabilidades. No es necesario certificarse en ISO 9001:2015 para aplicar esta lógica de orden documental — el método puede usarse independientemente de la norma.
+      </div>
+      <p style="font-size:.85rem;"><i>La jerarquía documental ayuda a mantener data histórica, lo cual es clave para metodologías como Six Sigma (DMAIC).</i></p>
+    </div>
+    <div class="game-box">
+      <h4>🔢 Ordena la jerarquía documental (de lo más general a lo más específico)</h4>
+      <ul class="order-list" id="order32">
+        <li draggable="true" data-correct="2"><span class="handle">⋮⋮</span> Procedimientos</li>
+        <li draggable="true" data-correct="0"><span class="handle">⋮⋮</span> Políticas</li>
+        <li draggable="true" data-correct="1"><span class="handle">⋮⋮</span> Manuales</li>
+        <li draggable="true" data-correct="3"><span class="handle">⋮⋮</span> Instructivos</li>
+        <li draggable="true" data-correct="4"><span class="handle">⋮⋮</span> Registros / Formatos</li>
+      </ul>
+      <button class="act" onclick="checkOrder('order32','u3_2')">Comprobar orden</button>
+      <div class="feedback" id="fb_u3_2"></div>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: clasifica documentos reales de una empresa</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;">Empareja cada documento con su nivel en la jerarquía documental:</p>
+      <div class="match-grid" id="match32doc"></div>
+    </div>
+  </div>
+
+  <!-- 3.3 -->
+  <div class="card">
+    <h3><span class="num">3.3</span>BPMN</h3>
+    <span class="tag">NOTACIÓN ESTÁNDAR DE PROCESOS</span>
+    <div class="theory">
+      <p><b>BPMN</b> (Business Process Model and Notation) es una notación estándar para modelar procesos de negocio, creada por la Business Process Management Initiative (BPMI) y luego fusionada con el Object Management Group (OMG). Su objetivo: una representación gráfica comprensible tanto para analistas de negocio como para desarrolladores.</p>
+      <p><b>Propósito:</b> cerrar la brecha de comunicación entre el diseño del proceso de negocio y su implementación técnica, facilitando la comprensión mutua entre gerentes, analistas y desarrolladores.</p>
+
+      <p><b>¿Por qué es importante?</b> Estandarización de la comunicación · Claridad en la documentación de procesos · Facilita la mejora y optimización · Apoya la automatización · Escalabilidad y flexibilidad · Mejora el control y cumplimiento normativo.</p>
+
+      <p><b>Elementos de BPMN</b> — explora cada categoría:</p>
+      <div class="accord" id="acc33elem"></div>
+
+      <p><b>Ejemplo práctico · Gestión de una Orden de Compra</b> — recorre el modelado paso a paso:</p>
+      <div class="hotspot-flow" id="hs33oc"></div>
+      <div class="hotspot-detail" id="hsd33oc"></div>
+    </div>
+    <div class="game-box">
+      <h4>🔗 Empareja el elemento BPMN con su definición</h4>
+      <div class="match-grid" id="match33"></div>
+      <p style="font-size:.8rem;color:var(--gray);margin-top:.4rem;">Selecciona una tarjeta izquierda y su definición correspondiente.</p>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: arma el flujo de la Orden de Compra</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;">Ordena los pasos del modelado BPMN de este proceso (arriba = primer paso):</p>
+      <ul class="order-list" id="order33oc">
+        <li draggable="true" data-correct="2"><span class="handle">⋮⋮</span> Añadir tareas "Revisar Orden" y "Aprobar Orden"</li>
+        <li draggable="true" data-correct="0"><span class="handle">⋮⋮</span> Crear el pool y dividirlo en lanes "Ventas" y "Finanzas"</li>
+        <li draggable="true" data-correct="4"><span class="handle">⋮⋮</span> Finalizar con un evento de fin (procesada o rechazada)</li>
+        <li draggable="true" data-correct="1"><span class="handle">⋮⋮</span> Iniciar con el evento "Recepción de Orden de Compra"</li>
+        <li draggable="true" data-correct="3"><span class="handle">⋮⋮</span> Usar una compuerta exclusiva (XOR) para aprobar/rechazar</li>
+      </ul>
+      <button class="act" onclick="checkOrder('order33oc','u3_3b')">Comprobar orden</button>
+      <div class="feedback" id="fb_u3_3b"></div>
+    </div>
+  </div>
+
+  <div class="synthesis">
+    <b>Síntesis Unidad 3:</b> La documentación (políticas, manuales, procedimientos, instructivos, registros) da soporte y trazabilidad a los procesos bajo ISO 9001:2015, mientras que BPMN ofrece el lenguaje gráfico estándar para modelar esos mismos procesos y comunicarlos entre áreas de negocio y tecnología.
+  </div>
+</section>
+
+<!-- ================= UNIDAD 4 ================= -->
+<section class="tab-content" id="u4">
+  <h2 class="unit-title">Unidad 4 · Indicadores, Objetivos SMART y Semaforización</h2>
+
+  <!-- 4.1 -->
+  <div class="card">
+    <h3><span class="num">4.1</span>Indicadores Clave de Desempeño (KPI)</h3>
+    <span class="tag">"LO QUE NO SE MIDE, NO SE PUEDE MEJORAR" — KELVIN</span>
+    <div class="theory">
+      <p><b>KPI (Key Performance Indicators):</b> métricas que reflejan el nivel de desempeño de un proceso, centrándose en el "cómo" e indicando el rendimiento para alcanzar una meta u objetivo definido. Suelen estar asociados al Plan Estratégico y a la toma de decisiones.</p>
+      <div class="quote-box">"Lo que no se mide, no se puede mejorar. Lo que no se mejora, se degrada siempre." — William Thomson Kelvin</div>
+
+      <p><b>Objetivos de los KPI:</b> Monitorear el progreso · Tomar decisiones basadas en datos · Motivar equipos con metas claras · Detectar áreas de mejora.</p>
+
+      <p><b>Características de un buen KPI</b> — voltea cada tarjeta:</p>
+      <div class="flip-grid" id="flip41car"></div>
+      <div class="flip-hint">👆 Haz clic sobre una tarjeta para voltearla</div>
+
+      <p><b>Tipos de KPI</b> — haz clic en cada tipo para ver su ejemplo (luego pon a prueba tu memoria en el juego de abajo):</p>
+      <div class="hotspot-flow" id="hs41tipo"></div>
+      <div class="hotspot-detail" id="hsd41tipo"></div>
+
+      <p><b>Metodologías para establecer KPIs:</b></p>
+      <ul>
+        <li><b>SMART:</b> criterios que aseguran KPIs claros y alcanzables (ver tema 4.2).</li>
+        <li><b>Balanced Scorecard:</b> evalúa el desempeño desde 4 perspectivas integradas: financiera, del cliente, de procesos internos, y de aprendizaje y crecimiento.</li>
+        <li><b>OKR (Objectives and Key Results):</b> sistema de metas ambiciosas medidas mediante resultados clave específicos (2 aristas: Objetivos y Resultados Clave).</li>
+      </ul>
+    </div>
+    <div class="game-box">
+      <h4>🔗 Empareja el tipo de KPI con su ejemplo</h4>
+      <div class="match-grid" id="match41"></div>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: calcula el KPI real</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;">En un mes, un <b>call center</b> resolvió <b>918 de 1,000</b> tickets dentro del plazo comprometido. Calcula el KPI de cumplimiento (%):</p>
+      <div class="kpi-input-row">
+        <input type="number" id="kpiCalc1" step="0.1" placeholder="Ej. 91.8">
+        <span>%</span>
+        <button class="act" onclick="checkKpiCalc('kpiCalc1',91.8,0.5,'fb_kpi1')">Comprobar</button>
+      </div>
+      <div class="feedback" id="fb_kpi1"></div>
+      <p style="font-size:.78rem;color:var(--gray);">Fórmula: (tickets resueltos a tiempo / total de tickets) × 100</p>
+
+      <p style="font-size:.83rem;margin:.7rem 0 .3rem;"><b>Segundo reto:</b> una fábrica de textiles registró <b>14 defectos</b> en un lote de <b>2,000</b> prendas producidas. Calcula la Tasa de Defectos (%):</p>
+      <div class="kpi-input-row">
+        <input type="number" id="kpiCalc2" step="0.01" placeholder="Ej. 0.70">
+        <span>%</span>
+        <button class="act" onclick="checkKpiCalc('kpiCalc2',0.7,0.05,'fb_kpi2')">Comprobar</button>
+      </div>
+      <div class="feedback" id="fb_kpi2"></div>
+    </div>
+  </div>
+
+  <!-- 4.2 -->
+  <div class="card">
+    <h3><span class="num">4.2</span>Metodología SMART</h3>
+    <span class="tag">S · M · A · R · T</span>
+    <div class="theory">
+      <p><b>Origen:</b> la metodología SMART fue introducida por <b>George T. Doran</b> en su artículo "There's a S.M.A.R.T. way to write management's goals and objectives" (Management Review, noviembre 1981), para ayudar a definir objetivos eficaces y medibles.</p>
+      <p><b>Concepto:</b> enfoque estructurado para la definición de objetivos que garantiza que sean claros, alcanzables y evaluables. Se usa ampliamente en gestión empresarial, planificación estratégica, desarrollo personal y proyectos.</p>
+
+      <p><b>Las 5 dimensiones SMART</b> — voltea cada tarjeta para ver la pregunta clave y el fundamento teórico:</p>
+      <div class="flip-grid" id="flip42smart"></div>
+      <div class="flip-hint">👆 Haz clic sobre una tarjeta para voltearla</div>
+
+      <div class="case-box">
+        <span class="case-tag">Ejemplo desglosado</span>
+        "Reducir el tiempo promedio de respuesta a las solicitudes de soporte de los clientes <b>(S: Soporte al Cliente)</b> <b>en un 20% (M)</b> en los <b>próximos 3 meses (T)</b>, implementando un <b>nuevo sistema de gestión de tickets (A)</b>." — objetivo realista y relevante para el área de Servicio al Cliente <b>(R)</b>.
+      </div>
+    </div>
+    <div class="game-box">
+      <h4>🏷️ Identifica qué criterio SMART corresponde a cada fragmento</h4>
+      <p style="font-size:.82rem;">Objetivo: <i>"Reducir el tiempo de respuesta a consultas de clientes <b>en un 25%</b> <b>en los próximos 3 meses</b> mediante un <b>chatbot de atención al cliente</b>, en el área de <b>Servicio al Cliente</b>."</i></p>
+      <div id="smart42"></div>
+      <button class="act" onclick="checkSmart()">Comprobar</button>
+      <div class="feedback" id="fb_u4_2"></div>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: construye tu propio objetivo SMART</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;">Completa cada campo pensando en un objetivo real de tu área de trabajo o estudio:</p>
+      <div class="smart-builder">
+        <div><span class="reflect-label">S · ¿Qué quieres lograr, específicamente?</span><input type="text" id="sb_s" oninput="updateSmartBuilder()" placeholder="Ej. reducir el tiempo de facturación"></div>
+        <div><span class="reflect-label">M · ¿Con qué número lo medirás?</span><input type="text" id="sb_m" oninput="updateSmartBuilder()" placeholder="Ej. en un 15%"></div>
+        <div><span class="reflect-label">A · ¿Cómo lo lograrás (acción/recurso)?</span><input type="text" id="sb_a" oninput="updateSmartBuilder()" placeholder="Ej. automatizando la validación de datos"></div>
+        <div><span class="reflect-label">R · ¿Para qué área o proceso es relevante?</span><input type="text" id="sb_r" oninput="updateSmartBuilder()" placeholder="Ej. en el área de Facturación"></div>
+        <div><span class="reflect-label">T · ¿En cuánto tiempo?</span><input type="text" id="sb_t" oninput="updateSmartBuilder()" placeholder="Ej. en los próximos 2 meses"></div>
+      </div>
+      <div class="smart-preview" id="smartPreview">Tu objetivo SMART aparecerá aquí a medida que completas los campos…</div>
+    </div>
+  </div>
+
+  <!-- 4.3 -->
+  <div class="card">
+    <h3><span class="num">4.3</span>Semaforización de KPIs</h3>
+    <span class="tag">VERDE · AMARILLO · ROJO</span>
+    <div class="theory">
+      <p><b>Analogía:</b> en una intersección concurrida, los semáforos regulan el flujo de vehículos y peatones. <b>Verde</b> = avanzar; <b>Amarillo</b> = precaución, prepararse para detenerse; <b>Rojo</b> = detenerse por completo.</p>
+      <p><b>Semaforización de KPI:</b> herramienta visual que traduce los resultados de los indicadores en colores (verde, amarillo, rojo) para identificar rápidamente el estado de un proceso o actividad.</p>
+
+      <p><b>Objetivos:</b> Facilitar la interpretación rápida del estado del proceso · Priorizar acciones destacando lo que necesita atención urgente · Mejorar la comunicación con codificación visual intuitiva.</p>
+
+      <p><b>¿Por qué es importante?</b> — explora cada aspecto:</p>
+      <div class="accord" id="acc43imp"></div>
+
+      <p><b>Relación con los objetivos organizacionales:</b> la semaforización proporciona una forma clara y eficiente de monitorear el desempeño y asegurar que los objetivos se estén alcanzando.</p>
+
+      <div class="predict-box">
+        <div class="p-q">🤔 Un KPI está en rojo por tercer mes consecutivo. ¿Qué herramienta de mejora continua usarías primero para encontrar la causa?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="checkPredictChoice(this,true,'rv43')">Análisis Causa Raíz / 5 Por Qué</button>
+          <button class="choice-btn" onclick="checkPredictChoice(this,false,'rv43')">Aumentar la meta del KPI</button>
+        </div>
+        <div class="predict-reveal" id="rv43">Correcto: ante una desviación sostenida se aplican <b>Análisis de Pareto</b>, <b>Análisis Causa Raíz</b> y los <b>5 Por Qué</b> para identificar el origen real del problema — no se ajusta la meta para "maquillar" el resultado.</div>
+      </div>
+      <p style="font-size:.85rem;"><i>La semaforización determina el "estado de salud" del proceso: cuando un indicador se desvía de la meta, se activan de inmediato las alertas y la intervención.</i></p>
+    </div>
+    <div class="game-box">
+      <h4>🚦 Simulador: ¿qué color le corresponde?</h4>
+      <p style="font-size:.82rem;margin-bottom:.4rem;">Meta de satisfacción del cliente: <b>≥ 90% Verde</b> · 75–89% Amarillo · &lt; 75% Rojo.</p>
+      <div class="slider-row">
+        <input type="range" min="50" max="100" value="80" id="semRange" oninput="updateSem()">
+        <span id="semVal" style="font-weight:700;">80%</span>
+        <div class="semaforo">
+          <div class="luz" id="luzR"></div>
+          <div class="luz" id="luzA"></div>
+          <div class="luz" id="luzV"></div>
+        </div>
+      </div>
+      <p style="font-size:.82rem;" id="semMsg"></p>
+    </div>
+    <div class="practice-box">
+      <h4>🧪 Aplícalo: semaforiza el dashboard real de un mes</h4>
+      <p style="font-size:.83rem;margin-bottom:.5rem;">Con las metas dadas, asigna el color correcto a cada indicador:</p>
+      <table class="kpi-dashboard">
+        <tr><th>Indicador</th><th>Meta</th><th>Resultado</th><th>Color</th></tr>
+        <tr>
+          <td>Citas médicas atendidas a tiempo (clínica)</td><td>≥90% verde · 75-89% amarillo · &lt;75% rojo</td><td>93%</td>
+          <td class="color-choices" id="dash1"></td>
+        </tr>
+        <tr>
+          <td>Tasa de errores en pedidos (tienda retail)</td><td>≤2% verde · 2-5% amarillo · &gt;5% rojo</td><td>4%</td>
+          <td class="color-choices" id="dash2"></td>
+        </tr>
+        <tr>
+          <td>Satisfacción de huéspedes (hotel)</td><td>≥85% verde · 70-84% amarillo · &lt;70% rojo</td><td>62%</td>
+          <td class="color-choices" id="dash3"></td>
+        </tr>
+      </table>
+      <div class="feedback" id="fb_dash" style="display:block;background:transparent;color:var(--gray);font-weight:400;">Haz clic en el color que corresponde a cada fila.</div>
+    </div>
+  </div>
+
+  <div class="synthesis">
+    <b>Síntesis Unidad 4:</b> Los KPI cuantifican el desempeño; la metodología SMART asegura que los objetivos detrás de esos KPI sean claros y alcanzables; y la semaforización traduce los resultados en una señal visual (verde/amarillo/rojo) que dispara la acción correctiva o preventiva dentro del ciclo de mejora continua.
+  </div>
+</section>
+
+<!-- ================= REPASO FINAL ================= -->
+<section class="tab-content" id="final">
+  <h2 class="unit-title">Repaso Final Integrador</h2>
+  <div class="card">
+    <p class="theory">10 preguntas que combinan las 4 unidades del curso. Responde cada una para ver tu retroalimentación inmediata.</p>
+    <div class="progress-wrap"><div class="progress-bar" id="finalProgress"></div></div>
+    <div id="finalQuizArea"></div>
+    <button class="act" id="finalResetBtn" onclick="renderFinalQuiz()" style="margin-top:1rem;">🔄 Reiniciar repaso final</button>
+  </div>
+
+  <div class="synthesis">
+    <b>Síntesis General del Curso:</b> La Gestión por Procesos integra una mirada sistémica de la organización, estructuras que se adaptan al entorno, un mapeo y jerarquización claros de las actividades, documentación que sostiene la trazabilidad (ISO 9001, BPMN), y un sistema de indicadores (KPI, SMART, semaforización) que cierra el ciclo de mejora continua (PHVA). Todo proceso, sin excepción, siempre puede mejorarse.
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--teal-dark);font-size:1rem;">📚 Bibliografía general del curso</h3>
+    <ul class="biblio">
+      <li>Drucker, P. — Management by Objectives</li>
+      <li>Doran, G. T. (1981). There's a S.M.A.R.T. way to write management's goals and objectives.</li>
+      <li>Porter, M. E. (2009). Ventaja Competitiva. Creación y Sostenimiento de un desempeño superior.</li>
+      <li>Kaplan, R. S., & Norton, D. P. (2004). Strategy Maps.</li>
+      <li>Dumas, M., La Rosa, M., Mendling, J., & Reijers, H. (2018). Fundamentals of Business Process Management.</li>
+      <li>Liker, J. K., & Franz, J. K. (2020). El modelo Toyota para la mejora continua.</li>
+      <li>Robbins, S. P., & Coulter, M. (2017). Management. 14th Edition.</li>
+      <li>Sterman, J. D. (2018). Business Dynamics: Systems Thinking and Modeling for a Complex World.</li>
+      <li>Weske, M. (2007). Business Process Management: Concepts, Languages, Architectures.</li>
+      <li>Doerr, J. (2019). Mide lo que importa: Cómo Google, Bono y la Fundación Gates cambian el mundo con OKR.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+<footer>Universidad Tecnológica ECOTEC · Gestión por Procesos · Material de repaso elaborado para uso académico</footer>
+
+<script>
+/* ---------- TABS ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ---------- SCORE ---------- */
+let score = 0;
+const solved = {};
+function addScore(key, pts){
+  if(solved[key]) return;
+  solved[key]=true;
+  score+=pts;
+  document.getElementById('scoreTotal').textContent=score;
+}
+
+/* ---------- DRAG & DROP (classify) ---------- */
+let draggedEl=null;
+document.addEventListener('dragstart',e=>{
+  if(e.target.classList.contains('drag-item')){ draggedEl=e.target; }
+});
+function allowDrop(e){ e.preventDefault(); e.currentTarget.classList.add('over'); }
+function dropItem(e){
+  e.preventDefault();
+  e.currentTarget.classList.remove('over');
+  if(!draggedEl) return;
+  const span=document.createElement('span');
+  span.className='placed';
+  span.textContent=draggedEl.textContent;
+  span.dataset.ans=draggedEl.dataset.ans;
+  span.dataset.zone=e.currentTarget.dataset.zone;
+  e.currentTarget.appendChild(span);
+  draggedEl.classList.add('gone');
+  draggedEl=null;
+}
+document.querySelectorAll('.drop-zone').forEach(z=>{
+  z.addEventListener('dragleave',()=>z.classList.remove('over'));
+});
+function checkDrag(key, poolIds){
+  let total=0, correct=0;
+  poolIds.forEach(pid=>{
+    const pool=document.getElementById(pid);
+    total += pool.querySelectorAll('.drag-item').length;
+  });
+  document.querySelectorAll('.drop-zone .placed').forEach(p=>{
+    if(p.dataset.ans===p.dataset.zone) correct++;
+  });
+  const fb=document.getElementById('fb_'+key);
+  fb.style.display='block';
+  if(correct===total && total>0){
+    fb.className='feedback ok';
+    fb.textContent=`¡Excelente! ${correct}/${total} correctas.`;
+    addScore(key,10);
+  } else {
+    fb.className='feedback bad';
+    fb.textContent=`Tienes ${correct}/${total} correctas. Revisa las tarjetas mal ubicadas y vuelve a intentarlo.`;
+  }
+}
+
+/* ---------- ORDER (drag to reorder list) ---------- */
+document.querySelectorAll('.order-list').forEach(list=>{
+  let dragLi=null;
+  list.querySelectorAll('li').forEach(li=>{
+    li.addEventListener('dragstart',()=>{ dragLi=li; li.classList.add('dragging'); });
+    li.addEventListener('dragend',()=>{ li.classList.remove('dragging'); });
+    li.addEventListener('dragover',e=>{
+      e.preventDefault();
+      const after=[...list.querySelectorAll('li:not(.dragging)')].find(sib=>{
+        const box=sib.getBoundingClientRect();
+        return e.clientY < box.top + box.height/2;
+      });
+      if(after) list.insertBefore(dragLi, after); else list.appendChild(dragLi);
+    });
+  });
+});
+function checkOrder(listId,key){
+  const items=[...document.getElementById(listId).querySelectorAll('li')];
+  const correct = items.every((li,idx)=>parseInt(li.dataset.correct)===idx);
+  const fb=document.getElementById('fb_'+key);
+  fb.style.display='block';
+  if(correct){
+    fb.className='feedback ok'; fb.textContent='¡Orden correcto!';
+    addScore(key,10);
+  } else {
+    fb.className='feedback bad'; fb.textContent='El orden aún no es correcto. Sigue intentando.';
+  }
+}
+
+/* ---------- INTERACTIVE THEORY COMPONENTS ---------- */
+function renderFlipCards(id, items){
+  const box=document.getElementById(id);
+  if(!box) return;
+  items.forEach(it=>{
+    const card=document.createElement('div');
+    card.className='flip-card';
+    card.innerHTML=`<div class="flip-inner"><div class="flip-front">${it.front}</div><div class="flip-back">${it.back}</div></div>`;
+    card.onclick=()=>card.classList.toggle('flipped');
+    box.appendChild(card);
+  });
+}
+function renderAccordion(id, items){
+  const box=document.getElementById(id);
+  if(!box) return;
+  items.forEach(it=>{
+    const div=document.createElement('div');
+    div.className='accord-item';
+    div.innerHTML=`<div class="accord-head">${it.title}<span class="plus">+</span></div><div class="accord-body"><div class="accord-body-inner">${it.body}</div></div>`;
+    div.querySelector('.accord-head').onclick=()=>div.classList.toggle('open');
+    box.appendChild(div);
+  });
+}
+function renderHotspots(boxId, detailId, nodes, withArrows){
+  const box=document.getElementById(boxId);
+  const detail=document.getElementById(detailId);
+  if(!box) return;
+  nodes.forEach((n,i)=>{
+    const el=document.createElement('div');
+    el.className='hotspot';
+    el.textContent=n.label;
+    el.onclick=()=>{
+      box.querySelectorAll('.hotspot').forEach(h=>h.classList.remove('active'));
+      el.classList.add('active');
+      detail.innerHTML=`<b>${n.label}:</b> ${n.desc}`;
+    };
+    box.appendChild(el);
+    if(withArrows && i<nodes.length-1){
+      const arrow=document.createElement('span');
+      arrow.className='hotspot-arrow'; arrow.textContent='→';
+      box.appendChild(arrow);
+    }
+  });
+  detail.innerHTML='👆 Haz clic en cada elemento para ver su definición.';
+}
+function renderToggle(id, options){
+  const box=document.getElementById(id);
+  if(!box) return;
+  const switchDiv=document.createElement('div'); switchDiv.className='toggle-switch';
+  const panel=document.createElement('div'); panel.className='toggle-panel';
+  options.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='toggle-btn'+(i===0?' active':'');
+    btn.textContent=o.label;
+    btn.onclick=()=>{
+      switchDiv.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      panel.innerHTML=o.html;
+    };
+    switchDiv.appendChild(btn);
+  });
+  panel.innerHTML=options[0].html;
+  box.appendChild(switchDiv); box.appendChild(panel);
+}
+function togglePredict(id){
+  document.getElementById(id).classList.toggle('shown');
+}
+function renderMiniClassify(id, items, key){
+  // items: [{label, correctZone}], simple click-to-tag with two/more target labels shown as buttons under each item
+  const box=document.getElementById(id);
+  if(!box) return;
+}
+
+/* ---------- VERDADERO / FALSO ---------- */
+const vfData = {
+  vf12:[
+    {t:"Una organización es un ejemplo de sistema abierto.",a:true},
+    {t:"La retroalimentación negativa amplifica el crecimiento de una tendencia.",a:false},
+    {t:"La sinergia significa que el todo es mayor que la suma de sus partes.",a:true},
+    {t:"Un sistema cerrado interactúa dinámicamente con su entorno.",a:false}
+  ],
+  vf31:[
+    {t:"La gestión documental abarca desde la creación hasta la disposición final del documento.",a:true},
+    {t:"Es obligatorio certificarse en ISO 9001:2015 para gestionar documentación.",a:false},
+    {t:"El control de registros (7.5.3) busca evidenciar el cumplimiento del sistema de gestión de calidad.",a:true}
+  ]
+};
+function renderVF(){
+  Object.keys(vfData).forEach(id=>{
+    const box=document.getElementById(id);
+    if(!box) return;
+    vfData[id].forEach((q,i)=>{
+      const row=document.createElement('div');
+      row.style.marginBottom='.6rem';
+      row.innerHTML=`<div style="font-size:.85rem;margin-bottom:.3rem;">${i+1}. ${q.t}</div>
+        <button class="choice-btn" data-id="${id}" data-i="${i}" data-v="true" onclick="pickVF(this)">Verdadero</button>
+        <button class="choice-btn" data-id="${id}" data-i="${i}" data-v="false" onclick="pickVF(this)">Falso</button>`;
+      box.appendChild(row);
+    });
+  });
+}
+function pickVF(btn){
+  const {id,i,v} = btn.dataset;
+  const correct = vfData[id][i].a;
+  const chosen = v==='true';
+  const row = btn.parentElement;
+  row.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  btn.classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct){
+    row.querySelector(`[data-v="${correct}"]`).classList.add('correct');
+  }
+}
+function checkVF(boxId,key){
+  const fb=document.getElementById('fb_'+key);
+  fb.style.display='block';
+  const total=vfData[boxId].length;
+  let answered=0, correct=0;
+  document.querySelectorAll(`#${boxId} .choice-btn:disabled`).forEach(()=>{});
+  vfData[boxId].forEach((q,i)=>{
+    const chosen=document.querySelector(`#${boxId} .choice-btn[data-i="${i}"].correct, #${boxId} .choice-btn[data-i="${i}"].wrong`);
+    if(chosen){ answered++; }
+  });
+  document.querySelectorAll(`#${boxId} .choice-btn.correct`).forEach(b=>{
+    // count unique questions where the correct one matches user's original pick class 'correct' AND was clicked (has some indicator) - simplified:
+  });
+  // simple recompute: correct = number of rows whose clicked wrong button count is 0
+  let rightCount=0;
+  document.querySelectorAll(`#${boxId} > div`).forEach(row=>{
+    const wrong = row.querySelector('.choice-btn.wrong');
+    if(!wrong) rightCount++;
+  });
+  if(answered<total){
+    fb.className='feedback bad';
+    fb.textContent=`Responde todas las preguntas (${answered}/${total}).`;
+    return;
+  }
+  if(rightCount===total){
+    fb.className='feedback ok'; fb.textContent=`¡Perfecto! ${rightCount}/${total} correctas.`;
+    addScore(key,10);
+  } else {
+    fb.className='feedback bad'; fb.textContent=`Obtuviste ${rightCount}/${total} correctas. Las respuestas correctas ya quedaron marcadas en verde.`;
+  }
+}
+renderVF();
+
+/* ---------- MATCHING GAMES ---------- */
+const matchData = {
+  match14: {
+    left:["Hospital: 40% de la espera es por resultados de laboratorio en papel","Banco: 8% de créditos con errores, no se sabe en qué paso ocurren","Institución pública: debe demostrar procesos documentados y controlados","Fábrica: quiere reducir defectos con base en datos estadísticos"],
+    right:["Lean · VSM","Six Sigma · DMAIC","ISO 9001","Six Sigma · DMAIC"]
+  },
+  match33: {
+    left:["Círculo con borde grueso","Rombo con una X","Rombo con un +","Línea discontinua con un sobre","Carriles (Lanes)"],
+    right:["Evento de finalización","Compuerta exclusiva (XOR)","Compuerta paralela (AND)","Flujo de mensaje","Roles/departamentos dentro de un pool"]
+  },
+  match41: {
+    left:["COSTOS","RAPIDEZ","CALIDAD","SEGURIDAD","PERSONAS"],
+    right:["Costo por unidad producida","Tiempo de respuesta al cliente","Tasa de defectos","Tasa de enfermedades laborales","Horas de capacitación por empleado"]
+  },
+  matchDiag12: {
+    left:["Cada área optimiza su propio KPI y nadie ve el resultado global","Un cambio en logística generó fallas inesperadas en ventas y facturación","La empresa no ajusta sus procesos ante quejas repetidas de clientes","Un pequeño ajuste de inventario evita que se rompa el stock cada semana"],
+    right:["Falta de visión holística (ver el todo, no solo las partes)","Interdependencia (un cambio afecta a todo el sistema)","Ausencia de retroalimentación (no hay ciclo de corrección)","Homeostasis (ajuste constante para mantener el equilibrio)"]
+  },
+  match21b: {
+    left:["Cliente que solicita la cuenta","Cédula de identidad y formulario de solicitud","Verificar identidad y activar la cuenta","Cuenta activada con tarjeta de débito","Cliente titular de la cuenta"],
+    right:["Supplier","Input","Process","Output","Customer"]
+  },
+  match32doc: {
+    left:["Política de Calidad de la empresa","Manual de Procedimientos de Recursos Humanos","Procedimiento de admisión de pacientes en una clínica","Instructivo de manejo de una máquina de café industrial","Registro de auditoría interna firmado"],
+    right:["Política","Manual","Procedimiento","Instructivo","Registro"]
+  }
+};
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+
+function renderMatch(containerId, key){
+  const data = matchData[key];
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  const leftCol = document.createElement('div'); leftCol.className='match-col';
+  const rightCol = document.createElement('div'); rightCol.className='match-col';
+  const leftIdx = data.left.map((_,i)=>i);
+  const rightOrder = shuffle(data.right.map((_,i)=>i));
+  leftIdx.forEach(i=>{
+    const el=document.createElement('div');
+    el.className='match-item'; el.textContent=data.left[i]; el.dataset.pair=i;
+    el.onclick=()=>selectMatch(el,'L',key);
+    leftCol.appendChild(el);
+  });
+  rightOrder.forEach(i=>{
+    const el=document.createElement('div');
+    el.className='match-item'; el.textContent=data.right[i]; el.dataset.pair=i;
+    el.onclick=()=>selectMatch(el,'R',key);
+    rightCol.appendChild(el);
+  });
+  container.appendChild(leftCol); container.appendChild(rightCol);
+}
+let matchSel={};
+function selectMatch(el,side,key){
+  if(el.classList.contains('matched')) return;
+  matchSel[key]=matchSel[key]||{};
+  if(matchSel[key][side]) matchSel[key][side].classList.remove('selected');
+  matchSel[key][side]=el;
+  el.classList.add('selected');
+  if(matchSel[key].L && matchSel[key].R){
+    const L=matchSel[key].L, R=matchSel[key].R;
+    if(L.dataset.pair===R.dataset.pair){
+      L.classList.add('matched'); R.classList.add('matched');
+      L.classList.remove('selected'); R.classList.remove('selected');
+      const total=matchData[key].left.length;
+      const doneCount=document.querySelectorAll(`#${Object.keys(matchData).find(k=>k===key)===key?matchContainerOf(key):''} .matched`).length;
+    } else {
+      L.classList.add('wrong'); R.classList.add('wrong');
+      setTimeout(()=>{ L.classList.remove('selected','wrong'); R.classList.remove('selected','wrong'); },500);
+    }
+    matchSel[key]={};
+    checkMatchComplete(key);
+  }
+}
+function matchContainerOf(key){ return key; }
+function checkMatchComplete(key){
+  const container=document.getElementById(key);
+  const total = matchData[key].left.length*2;
+  const matched = container.querySelectorAll('.matched').length;
+  if(matched===total){ addScore(key,10); }
+}
+renderMatch('match14','match14');
+renderMatch('match33','match33');
+renderMatch('match41','match41');
+renderMatch('matchDiag12','matchDiag12');
+renderMatch('match21b','match21b');
+renderMatch('match32doc','match32doc');
+
+/* ---------- SMART tagging activity ---------- */
+const smartParts = [
+  {text:"en un 25%", ans:"M"},
+  {text:"en los próximos 3 meses", ans:"T"},
+  {text:"chatbot de atención al cliente", ans:"A"},
+  {text:"Servicio al Cliente (área específica)", ans:"S/R"}
+];
+function renderSmart(){
+  const box=document.getElementById('smart42');
+  smartParts.forEach((p,i)=>{
+    const row=document.createElement('div');
+    row.style.marginBottom='.5rem';
+    row.innerHTML=`<div style="font-size:.83rem;margin-bottom:.25rem;">"${p.text}" corresponde a:</div>
+      <div class="choices" data-i="${i}">
+        ${["S","M","A","R","T"].map(l=>`<button class="choice-btn" onclick="pickSmart(this,${i},'${l}')">${l}</button>`).join('')}
+      </div>`;
+    box.appendChild(row);
+  });
+}
+function pickSmart(btn,i,letter){
+  const correctAns = smartParts[i].ans.split('/');
+  const row=btn.parentElement;
+  row.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  if(correctAns.includes(letter)){
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+    correctAns.forEach(c=>{
+      [...row.children].forEach(b=>{ if(b.textContent===c) b.classList.add('correct'); });
+    });
+  }
+}
+renderSmart();
+function checkSmart(){
+  const fb=document.getElementById('fb_u4_2');
+  fb.style.display='block';
+  const rows=document.querySelectorAll('#smart42 .choices');
+  let answered=0, right=0;
+  rows.forEach(r=>{
+    const disabled=r.querySelector('.choice-btn:disabled');
+    if(disabled) answered++;
+    if(!r.querySelector('.choice-btn.wrong')) right++;
+  });
+  if(answered<rows.length){ fb.className='feedback bad'; fb.textContent='Responde las 4 etiquetas.'; return; }
+  if(right===rows.length){ fb.className='feedback ok'; fb.textContent='¡Correcto! Identificaste todos los criterios SMART.'; addScore('u4_2',10); }
+  else{ fb.className='feedback bad'; fb.textContent=`${right}/${rows.length} correctas. Revisa las marcadas en verde.`; }
+}
+
+/* ---------- SEMAFORO SIMULATOR ---------- */
+function updateSem(){
+  const v=document.getElementById('semRange').value;
+  document.getElementById('semVal').textContent=v+'%';
+  const r=document.getElementById('luzR'), a=document.getElementById('luzA'), g=document.getElementById('luzV');
+  r.className='luz'; a.className='luz'; g.className='luz';
+  let msg='';
+  if(v>=90){ g.classList.add('on-green'); msg='🟢 Meta cumplida: continuar monitoreando.'; }
+  else if(v>=75){ a.classList.add('on-amber'); msg='🟡 Precaución: aplicar acciones preventivas antes de que empeore.'; }
+  else { r.classList.add('on-red'); msg='🔴 Acción correctiva inmediata: analizar causa raíz (5 Por Qué / Pareto).'; }
+  document.getElementById('semMsg').textContent=msg;
+  addScore('u4_3',5);
+}
+updateSem();
+
+/* ---------- FINAL QUIZ ---------- */
+const finalQuestions = [
+  {q:"¿Qué transforma un proceso, según su definición?", opts:["Insumos en resultados","Clientes en proveedores","Estrategias en políticas","KPIs en objetivos"], correct:0},
+  {q:"Una organización, según la Teoría Sistémica, es un ejemplo de:", opts:["Sistema cerrado","Sistema abierto","Subsistema aislado","Entropía pura"], correct:1},
+  {q:"¿Qué caracteriza a una estructura organizacional moderna?", opts:["Centralización total","Cadena de mando rígida","Descentralización y agilidad","Comunicación solo vertical"], correct:2},
+  {q:"El ciclo PHVA consta de las fases:", opts:["Planear, Hacer, Verificar, Actuar","Definir, Medir, Analizar, Mejorar","Iniciar, Ejecutar, Cerrar, Evaluar","Planear, Organizar, Dirigir, Controlar"], correct:0},
+  {q:"¿Qué significa la 'P' en el diagrama SIPOC?", opts:["Proveedor","Proceso","Producto","Planeación"], correct:1},
+  {q:"¿Cuál es el orden correcto de mayor a menor abstracción?", opts:["Subproceso > Proceso > Macroproceso","Macroproceso > Proceso > Subproceso","Proceso > Macroproceso > Subproceso","Macroproceso > Subproceso > Proceso"], correct:1},
+  {q:"En la Cadena de Valor de Porter, 'Marketing y Ventas' es una actividad:", opts:["De soporte","Primaria","Estratégica","De apoyo tecnológico"], correct:1},
+  {q:"¿Qué documento compila todos los procedimientos de un área?", opts:["Registro","Instructivo","Manual","Formato"], correct:2},
+  {q:"En BPMN, un rombo con una 'X' representa:", opts:["Un evento de inicio","Una compuerta exclusiva (XOR)","Una compuerta paralela (AND)","Un flujo de mensaje"], correct:1},
+  {q:"En la semaforización de KPIs, el color amarillo indica:", opts:["Meta cumplida","Acción correctiva urgente","Precaución / acción preventiva","No aplica ninguna acción"], correct:2}
+];
+let finalUserAnswers = new Array(finalQuestions.length).fill(null);
+function renderFinalQuiz(){
+  finalUserAnswers = new Array(finalQuestions.length).fill(null);
+  const area=document.getElementById('finalQuizArea');
+  area.innerHTML='';
+  finalQuestions.forEach((fq,i)=>{
+    const div=document.createElement('div');
+    div.className='final-quiz-q';
+    div.innerHTML=`<div style="font-weight:600;font-size:.9rem;margin-bottom:.4rem;">${i+1}. ${fq.q}</div>
+      <div class="choices" id="fq_${i}">
+        ${fq.opts.map((o,oi)=>`<button class="choice-btn" onclick="answerFinal(${i},${oi})">${o}</button>`).join('')}
+      </div>`;
+    area.appendChild(div);
+  });
+  document.getElementById('finalProgress').style.width='0%';
+}
+function answerFinal(qi,oi){
+  if(finalUserAnswers[qi]!==null) return;
+  finalUserAnswers[qi]=oi;
+  const box=document.getElementById('fq_'+qi);
+  const correct=finalQuestions[qi].correct;
+  [...box.children].forEach((b,idx)=>{
+    b.disabled=true;
+    if(idx===correct) b.classList.add('correct');
+    else if(idx===oi) b.classList.add('wrong');
+  });
+  const answeredCount=finalUserAnswers.filter(a=>a!==null).length;
+  document.getElementById('finalProgress').style.width=(answeredCount/finalQuestions.length*100)+'%';
+  if(answeredCount===finalQuestions.length){
+    const rightCount=finalUserAnswers.filter((a,i)=>a===finalQuestions[i].correct).length;
+    addScore('final',rightCount*5);
+    const summary=document.createElement('div');
+    summary.className='feedback ok';
+    summary.style.display='block';
+    summary.style.marginTop='1rem';
+    summary.textContent=`Repaso final completado: ${rightCount}/${finalQuestions.length} correctas.`;
+    document.getElementById('finalQuizArea').appendChild(summary);
+  }
+}
+renderFinalQuiz();
+
+/* ========================================================
+   NUEVOS COMPONENTES INTERACTIVOS DE TEORÍA (por tema)
+   ======================================================== */
+function checkPredictChoice(btn, isCorrect, revealId){
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  if(isCorrect){ btn.classList.add('correct'); } else { btn.classList.add('wrong'); }
+  document.getElementById(revealId).classList.add('shown');
+}
+function renderCaseChoices(id, cases){
+  const box=document.getElementById(id);
+  if(!box) return;
+  cases.forEach((c,ci)=>{
+    const div=document.createElement('div');
+    div.className='predict-box';
+    const choicesId=`${id}_c${ci}`, revealId=`${id}_r${ci}`;
+    div.innerHTML=`<div class="p-q">${c.text}</div><div class="choices" id="${choicesId}"></div><div class="predict-reveal" id="${revealId}">${c.explain}</div>`;
+    box.appendChild(div);
+    const choicesBox=div.querySelector('#'+choicesId);
+    c.options.forEach(o=>{
+      const btn=document.createElement('button');
+      btn.className='choice-btn';
+      btn.textContent=o.label;
+      btn.onclick=()=>{
+        choicesBox.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+        if(o.correct){ btn.classList.add('correct'); }
+        else{
+          btn.classList.add('wrong');
+          const correctOpt=c.options.find(oo=>oo.correct);
+          [...choicesBox.children].forEach(b2=>{ if(b2.textContent===correctOpt.label) b2.classList.add('correct'); });
+        }
+        document.getElementById(revealId).classList.add('shown');
+      };
+      choicesBox.appendChild(btn);
+    });
+  });
+}
+
+/* ---- 1.1 ---- */
+renderAccordion('acc11imp',[
+  {title:'⚙️ Elimina desperdicio', body:'Elimina actividades redundantes y reduce el desperdicio → mayor eficiencia operativa.'},
+  {title:'✅ Calidad consistente', body:'Estandariza la entrega de productos/servicios con calidad consistente.'},
+  {title:'😊 Satisfacción del cliente', body:'Alinea las operaciones con las necesidades del cliente → mejora la satisfacción.'},
+  {title:'💰 Reducción de costos', body:'Reduce costos operativos al minimizar el uso de recursos.'},
+  {title:'🔄 Adaptabilidad', body:'Permite adaptarse rápidamente a cambios del mercado, regulaciones y tecnología.'},
+  {title:'👁️ Visibilidad', body:'Da visibilidad de las operaciones para una toma de decisiones informada.'},
+  {title:'📈 Mejora continua', body:'Fomenta una cultura de mejora continua.'}
+]);
+renderFlipCards('flip11',[
+  {front:'Alineación estratégica', back:'Que los procesos estén alineados con los objetivos y estrategia general.'},
+  {front:'Eficiencia operacional', back:'Maximizar productividad y minimizar costos.'},
+  {front:'Calidad y consistencia', back:'Cumplir estándares establecidos de forma constante.'},
+  {front:'Satisfacción al cliente', back:'Enfocar los procesos en las necesidades y expectativas del cliente.'},
+  {front:'Innovación y adaptabilidad', back:'Responder rápidamente a cambios del entorno empresarial.'},
+  {front:'Transparencia y responsabilidad', back:'Clara definición y documentación de los procesos.'},
+  {front:'Cumplimiento normativo', back:'Cumplir regulaciones aplicables y evitar sanciones.'}
+]);
+renderAccordion('acc11ciclo',[
+  {title:'🧩 Elementos clave de la Gestión por Procesos', body:'<b>Mapeo y modelado:</b> representar gráficamente los pasos del proceso y crear una representación detallada para su análisis.<br><b>Identificación de procesos clave:</b> los de mayor impacto en la satisfacción del cliente y los objetivos estratégicos.<br><b>Indicadores de desempeño:</b> definir y medir KPIs.'},
+  {title:'🔄 Ciclo de vida de un proceso', body:'<b>Diseñar</b> (requisitos del cliente y objetivos organizacionales) → <b>Implementar</b> (capacitar personal, asignar recursos) → <b>Monitorear</b> (KPIs, detectar desviaciones) → <b>Mejorar</b> (aplicar PDCA, cultura de feedback).'}
+]);
+
+/* ---- 1.2 ---- */
+renderHotspots('hs12','hsd12',[
+  {label:'Entorno', desc:'Medio ambiente exterior que rodea al sistema.'},
+  {label:'Entradas', desc:'Recursos humanos, materiales e información que dan "arranque" al sistema.'},
+  {label:'Procesos', desc:'Tareas y acciones que transforman una entrada en una salida.'},
+  {label:'Salidas', desc:'Productos o servicios — la finalidad para la cual los elementos trabajan como un todo.'},
+  {label:'Retroalimentación', desc:'Función que permite comparar las salidas con una expectativa o criterio previamente establecido.'}
+], true);
+renderFlipCards('flip12prop',[
+  {front:'Sinergia', back:'El todo es más que la suma de sus partes. Ejemplo: un equipo de proyecto bien coordinado.'},
+  {front:'Homeostasis', back:'Capacidad de mantener estabilidad frente a cambios; no es estática sino un ajuste constante. Ejemplo: ajuste de inventario según demanda.'},
+  {front:'Entropía / Neguentropía', back:'Entropía: tendencia natural a la desorganización. Neguentropía: procesos que la contrarrestan importando energía e información (innovación, capacitación).'}
+]);
+renderToggle('tg12fb',[
+  {label:'Positiva (amplificadora)', html:'Refuerza una tendencia, acelera el cambio o el crecimiento. Permite al sistema alejarse del equilibrio, propiciando la innovación y la adaptación a nuevas condiciones. <br><b>Ejemplo:</b> éxito de un producto → más inversión en ese producto.'},
+  {label:'Negativa (correctora)', html:'Busca mantener el equilibrio y la estabilidad, corrigiendo desviaciones. Es esencial para la homeostasis, permitiendo que el sistema regrese a un estado deseado. <br><b>Ejemplo:</b> baja en ventas → revisión de estrategias de marketing.'}
+]);
+renderAccordion('acc12',[
+  {title:'🧠 Pensamiento sistémico en la práctica', body:'<b>Visión holística:</b> ver el "bosque" y no solo los "árboles".<br><b>Identificación de patrones y causas raíz:</b> ir más allá de los síntomas.<br><b>Interdependencia:</b> un cambio en una parte afecta a todo el sistema.<br><b>Ciclos de retroalimentación:</b> diseñarlos para el aprendizaje continuo.<br><b>Pensamiento de largo plazo:</b> considerar consecuencias futuras de decisiones actuales.'},
+  {title:'⚖️ Ventajas y limitaciones', body:'<b>Ventajas:</b> visión integral y holística; facilita comprender la complejidad organizacional; mejora la resolución de problemas (causas raíz); promueve adaptabilidad y aprendizaje continuo.<br><b>Limitaciones:</b> puede ser abstracta y difícil de aplicar en detalle; riesgo de sobre-generalización; puede subestimar el papel del individuo y el poder; dificultad para medir todas las interacciones.'}
+]);
+
+/* ---- 1.3 ---- */
+renderToggle('tg13',[
+  {label:'Estructura Tradicional', html:'Jerárquicas y centralizadas. Control claro y cadena de mando definida.<br><b>Características:</b> Jerarquización, Departamentalización, Centralización, Estabilidad y control.'},
+  {label:'Estructura Moderna', html:'Flexibles, descentralizadas y adaptativas. Fomentan innovación, colaboración y respuesta rápida.<br><b>Características:</b> Descentralización, Equipos de trabajo, Redes, Agilidad y flexibilidad.'}
+]);
+renderFlipCards('flip13ej',[
+  {front:'Estructura Funcional', back:'<b>Def:</b> se divide en departamentos por función (ventas, marketing, RR.HH...). <b>Ventaja:</b> claridad y especialización. <b>Desventaja:</b> silos que dificultan la colaboración.'},
+  {front:'Estructura en Red', back:'<b>Def:</b> colaboración entre organizaciones independientes hacia objetivos comunes. <b>Ventaja:</b> flexibilidad y acceso a recursos externos. <b>Desventaja:</b> dificultad de coordinación.'}
+]);
+renderAccordion('acc13dim',[
+  {title:'Jerarquía vs. Descentralización', body:'<b>Tradicional:</b> líneas claras de autoridad, decisiones centralizadas, estructura rígida. <b>Moderna:</b> distribución de decisiones, autonomía en equipos, estructura flexible.'},
+  {title:'Rigidez vs. Flexibilidad', body:'<b>Tradicional:</b> procesos estandarizados, resistencia al cambio. <b>Moderna:</b> adaptación rápida, enfoque en innovación y mejora continua.'},
+  {title:'Eficiencia vs. Innovación', body:'<b>Tradicional:</b> eficiencia operativa y control, estabilidad. <b>Moderna:</b> fomento de creatividad, respuesta al mercado.'},
+  {title:'Comunicación', body:'<b>Tradicional:</b> formal y vertical, poca interacción entre niveles. <b>Moderna:</b> abierta y horizontal, alta colaboración.'}
+]);
+
+/* ---- 1.4 ---- */
+renderToggle('tg14func',[
+  {label:'Gestión Funcional', html:'Organización por departamentos verticales · Cada área optimiza su propio resultado · El cliente es "problema de otro" · Comunicación lenta entre silos · Difícil ver el impacto global · Control por jerarquía.'},
+  {label:'Gestión por Procesos', html:'Organización por flujos de valor · Optimización del resultado global · El cliente es el centro del proceso · Comunicación fluida entre roles · Visibilidad de principio a fin · Control por indicadores de proceso.'}
+]);
+renderHotspots('hs14phva','hsd14phva',[
+  {label:'P · Planear', desc:'Definir el problema, establecer objetivos, identificar causas raíz y diseñar el plan de acción.'},
+  {label:'H · Hacer', desc:'Ejecutar el plan en escala piloto. Documentar y recopilar datos del proceso.'},
+  {label:'V · Verificar', desc:'Comparar resultados obtenidos con los objetivos. ¿Los datos confirman la mejora?'},
+  {label:'A · Actuar', desc:'Si funcionó, estandarizar y escalar. Si no, ajustar y volver a planear. (El ciclo vuelve a "Planear")'}
+], true);
+renderFlipCards('flip14marcos',[
+  {front:'ISO 9001', back:'Gestión de Calidad. Estándar más adoptado; principio base = enfoque por procesos; exige documentar, controlar y mejorar.'},
+  {front:'BPM / CBOK', back:'Los procesos como activos estratégicos; 8 áreas (modelado, análisis, diseño…); base del estándar BPMN.'},
+  {front:'Lean', back:'Origen Toyota (TPS); elimina 7 tipos de desperdicio (muda); Value Stream Mapping (VSM).'},
+  {front:'Six Sigma', back:'Meta: 3.4 defectos por millón; metodología DMAIC; basado en estadística. Lean Six Sigma = combinación más popular.'}
+]);
+renderCaseChoices('mc14',[
+  {text:'Hospital: 40% del tiempo de espera es porque el médico espera resultados de laboratorio en papel.', options:[{label:'Lean · VSM',correct:true},{label:'Six Sigma · DMAIC',correct:false},{label:'ISO 9001',correct:false}], explain:'Correcto: Lean/VSM elimina el desperdicio de transporte físico de resultados y crea flujo continuo.'},
+  {text:'Banco: 8% de créditos con errores de documentación, sin saber en qué paso ocurren.', options:[{label:'ISO 9001',correct:false},{label:'Six Sigma · DMAIC',correct:true},{label:'Lean · VSM',correct:false}], explain:'Correcto: Six Sigma/DMAIC mide estadísticamente para localizar la causa exacta del error.'},
+  {text:'Institución pública: necesita demostrar que sus procesos están documentados y controlados.', options:[{label:'Lean · VSM',correct:false},{label:'Six Sigma · DMAIC',correct:false},{label:'ISO 9001',correct:true}], explain:'Correcto: ISO 9001 certifica un sistema de gestión de calidad documentado y auditable.'}
+]);
+const madurezData=[
+  {label:'1 · Inicial (18%)', desc:'Procesos caóticos, no documentados. Resultados impredecibles.'},
+  {label:'2 · Repetible (36%)', desc:'Algunos procesos definidos informalmente. Depende de personas clave.'},
+  {label:'3 · Definido (55%)', desc:'Procesos documentados y estandarizados en toda la organización.'},
+  {label:'4 · Gestionado (75%)', desc:'Procesos medidos y controlados con indicadores y KPIs.'},
+  {label:'5 · Optimizado (100%)', desc:'Mejora continua sistemática y predecible. Innovación de procesos.'}
+];
+function updateMadurez(){
+  const v=parseInt(document.getElementById('madRange').value);
+  const d=madurezData[v-1];
+  document.getElementById('madVal').textContent=d.label;
+  document.getElementById('madDetail').innerHTML=`<b>${d.label}:</b> ${d.desc}`;
+}
+if(document.getElementById('madRange')) updateMadurez();
+
+/* ---- 2.1 ---- */
+renderHotspots('hs21sipoc','hsd21sipoc',[
+  {label:'S · Supplier', desc:'Personas, grupos, empresas o sistemas que proporcionan los insumos del proceso (internos o externos).'},
+  {label:'I · Inputs', desc:'Recursos, materiales, información o datos necesarios para el proceso.'},
+  {label:'P · Process', desc:'Secuencia de actividades que transforman las entradas en salidas.'},
+  {label:'O · Outputs', desc:'Resultados, productos o servicios generados, que deben cumplir las expectativas del cliente.'},
+  {label:'C · Customers', desc:'Quienes reciben los productos o servicios (internos o externos).'}
+], true);
+
+/* ---- 2.2 ---- */
+renderFlipCards('flip22obj',[
+  {front:'Alinear procesos con la estrategia', back:'Asegurar que todos los procesos estén alineados con las metas a largo plazo.'},
+  {front:'Optimizar el uso de recursos', back:'Identificar y priorizar procesos clave, asignando recursos de forma eficiente.'},
+  {front:'Mejorar eficiencia y eficacia', back:'Simplificar y mejorar procesos para incrementar la eficiencia operativa.'},
+  {front:'Clarificar roles y responsabilidades', back:'Definir claramente qué se espera de cada persona.'},
+  {front:'Facilitar la mejora continua', back:'Crear una estructura que permita evaluación y mejora constante.'},
+  {front:'Mejorar la toma de decisiones', back:'Dar visión clara de los procesos y su interrelación.'}
+]);
+renderAccordion('acc22niv',[
+  {title:'🎯 Estratégicos', body:'Definen la dirección a largo plazo (misión, visión, estrategias).'},
+  {title:'⚙️ Operativos', body:'El núcleo de las actividades diarias (producción y entrega de bienes/servicios).'},
+  {title:'🛠️ De Apoyo', body:'Facilitan y respaldan a los estratégicos y operativos (recursos y servicios).'}
+]);
+
+/* ---- 2.3 ---- */
+renderHotspots('hs23niv','hsd23niv',[
+  {label:'Macroproceso', desc:'Alto nivel de abstracción; agrupa varios procesos y subprocesos; impacto global, coordina múltiples áreas funcionales.'},
+  {label:'Proceso', desc:'Nivel de detalle medio; conjunto de actividades para lograr un objetivo particular dentro del macroproceso.'},
+  {label:'Subproceso', desc:'Alto nivel de detalle; tareas concretas dentro de un proceso; permiten gestión y mejora granular.'}
+], true);
+
+/* ---- 2.4 ---- */
+renderToggle('tg24act',[
+  {label:'Actividades Primarias', html:'<b>Logística Interna:</b> recepción, almacenamiento y distribución de materias primas.<br><b>Operaciones:</b> transformación de materias primas en productos finales.<br><b>Logística Externa:</b> distribución física del producto al consumidor.<br><b>Marketing y Ventas:</b> promoción, publicidad, ventas y canales.<br><b>Servicio Postventa:</b> soporte técnico, garantías, devoluciones.'},
+  {label:'Actividades de Soporte', html:'<b>Infraestructura:</b> soporte administrativo, financiero y de gestión.<br><b>Gestión de RR.HH.:</b> selección, entrenamiento, desarrollo y compensación.<br><b>Aprovisionamiento:</b> compras, inventarios y relación con proveedores.<br><b>Desarrollo Tecnológico:</b> I+D, automatización y TI.'}
+]);
+renderFlipCards('flip24est',[
+  {front:'Liderazgo en Costos', back:'Objetivo: ser el productor de bajo costo. Implicación: foco en eficiencia operativa y reducción de costos en toda la cadena.'},
+  {front:'Diferenciación', back:'Objetivo: ofrecer productos/servicios percibidos como únicos. Implicación: invertir en actividades que aumenten el valor percibido.'},
+  {front:'Enfoque / Segmentación', back:'Objetivo: atender mejor a un segmento específico. Implicación: personalizar las actividades de la cadena para ese segmento.'}
+]);
+
+/* ---- 3.1 ---- */
+renderAccordion('acc31ben',[
+  {title:'📊 Mejora de la toma de decisiones', body:'Información organizada y accesible facilita decidir con datos confiables.'},
+  {title:'🤝 Mejor colaboración y comunicación', body:'Un punto único de acceso a la información fomenta el trabajo en equipo.'},
+  {title:'🔍 Aumento de la transparencia', body:'Mayor responsabilidad y trazabilidad sobre quién hizo qué y cuándo.'},
+  {title:'🧠 Preservación del conocimiento', body:'Se conserva la memoria organizacional más allá de las personas.'},
+  {title:'🌱 Sostenibilidad ambiental', body:'Menor uso de papel y recursos físicos.'},
+  {title:'📦 Reducción de espacio físico', body:'Menos necesidad de archivo físico y almacenamiento.'}
+]);
+renderHotspots('hs31iso','hsd31iso',[
+  {label:'7.5.2 Control de Documentos', desc:'Asegura que los documentos necesarios para el Sistema de Gestión de Calidad estén disponibles y sean adecuados para su uso.'},
+  {label:'7.5.3 Control de Registros', desc:'Asegura que los registros necesarios para evidenciar el cumplimiento del SGC se controlen adecuadamente.'}
+]);
+
+/* ---- 3.2 ---- */
+renderHotspots('hs32niv','hsd32niv',[
+  {label:'Políticas', desc:'Principios, normas y directrices generales que rigen el funcionamiento de la organización.'},
+  {label:'Manuales', desc:'Compilan todos los procedimientos de una organización o área; guía completa para ejecutar tareas.'},
+  {label:'Procedimientos', desc:'Pasos específicos y detallados para llevar a cabo actividades o procesos.'},
+  {label:'Instructivos', desc:'Instrucciones específicas y precisas para tareas individuales dentro de un procedimiento.'},
+  {label:'Registros', desc:'Datos y evidencias resultantes de la ejecución de procesos, procedimientos e instrucciones.'},
+  {label:'Formatos', desc:'Documentos estándar para recopilar y registrar información de manera consistente.'}
+], true);
+renderHotspots('hs32ciclo','hsd32ciclo',[
+  {label:'1. Creación', desc:'Generación de un documento, en formato físico o digital.'},
+  {label:'2. Revisión y Aprobación', desc:'Evaluación del contenido para asegurar precisión, integridad y cumplimiento de estándares.'},
+  {label:'3. Distribución', desc:'Entrega del documento a las partes interesadas o destinatarios correspondientes.'},
+  {label:'4. Uso y Mantenimiento', desc:'Utilización en las operaciones diarias y mantenimiento de su relevancia y precisión.'},
+  {label:'5. Almacenamiento', desc:'Conservación de forma segura y accesible para futuros usos.'},
+  {label:'6. Retención', desc:'Mantenimiento durante un periodo específico en cumplimiento de normativas y políticas internas.'},
+  {label:'7. Disposición Final', desc:'Eliminación segura o conservación a largo plazo (archivado o destrucción).'}
+], true);
+
+/* ---- 3.3 ---- */
+renderAccordion('acc33elem',[
+  {title:'🔵 Eventos', body:'<b>Inicio:</b> marcan el comienzo de un proceso; círculos con distintos disparadores.<br><b>Intermedio:</b> ocurren entre inicio y fin; representan interrupciones o demoras.<br><b>Finalización:</b> señalan el término del proceso; círculo de borde grueso.'},
+  {title:'▭ Actividades', body:'<b>Tareas:</b> unidades básicas de trabajo (ej. "Aprobar Solicitud"); manuales, automáticas, de usuario o de servicio.<br><b>Subprocesos:</b> grupo de tareas que se ejecutan como una sola actividad; abiertos o cerrados.'},
+  {title:'◇ Compuertas (Gateways)', body:'<b>Exclusiva (XOR):</b> rombo con "X"; solo un camino posible.<br><b>Paralela (AND):</b> rombo con "+"; múltiples caminos simultáneos.<br><b>Inclusiva (OR):</b> rombo con círculo; uno o más caminos según condiciones.'},
+  {title:'👥 Participantes', body:'<b>Pools:</b> organizaciones o entidades completas que interactúan en el proceso.<br><b>Lanes:</b> dividen los pools en roles, departamentos o funciones.'},
+  {title:'📎 Artefactos', body:'<b>Anotaciones:</b> notas que clarifican elementos del diagrama.<br><b>Datos:</b> entrada/salida de información (formularios, documentos, bases de datos).<br><b>Grupos:</b> agrupaciones visuales de elementos relacionados.'},
+  {title:'➡️ Flujos', body:'<b>De secuencia:</b> flecha sólida; orden de ejecución de actividades.<br><b>De mensaje:</b> línea discontinua con un sobre; comunicación entre pools.'}
+]);
+renderHotspots('hs33oc','hsd33oc',[
+  {label:'1. Pool y Lanes', desc:'Crear un pool para la organización y dividirlo en lanes "Ventas" y "Finanzas".'},
+  {label:'2. Evento de Inicio', desc:'Iniciar el proceso con un evento de inicio "Recepción de Orden de Compra".'},
+  {label:'3. Tareas', desc:'Añadir tareas para "Revisar Orden", "Aprobar Orden" y "Enviar Orden al Proveedor".'},
+  {label:'4. Compuerta XOR', desc:'Usar una compuerta exclusiva para la decisión de aprobar o rechazar la orden.'},
+  {label:'5. Evento de Fin', desc:'Finalizar con un evento que indique si la orden fue procesada o rechazada.'}
+], true);
+
+/* ---- 4.1 ---- */
+renderFlipCards('flip41car',[
+  {front:'Accionable', back:'Vinculado a acciones concretas de mejora. Ej: "reducir la tasa de defectos" permite tomar medidas correctivas.'},
+  {front:'Comparable', back:'Permite comparar entre periodos, equipos o estándares de la industria.'},
+  {front:'Claro y simple', back:'Fácil de entender por todos los niveles de la organización.'},
+  {front:'Responsabilidad asignada', back:'Una persona o equipo responsable de su seguimiento.'},
+  {front:'Predictivo y balanceado', back:'Combina KPIs retrospectivos (qué pasó) y predictivos (qué pasará); equilibrado entre áreas.'}
+]);
+renderHotspots('hs41tipo','hsd41tipo',[
+  {label:'Costos', desc:'Costo por unidad producida (costos directos e indirectos).'},
+  {label:'Rapidez', desc:'Tiempo de respuesta al cliente (primer contacto hasta resolución).'},
+  {label:'Calidad', desc:'Tasa de defectos (productos defectuosos / total producido).'},
+  {label:'Seguridad', desc:'Tasa de enfermedades laborales.'},
+  {label:'Personas', desc:'Horas de capacitación por empleado.'}
+]);
+
+/* ---- 4.2 ---- */
+renderFlipCards('flip42smart',[
+  {front:'S · Específico', back:'¿Qué se quiere lograr? ¿Quién? ¿Dónde? ¿Por qué? — Drucker: los objetivos específicos alinean la actividad diaria con la estrategia.'},
+  {front:'M · Medible', back:'¿Cómo sabremos que se alcanzó? ¿Qué indicadores usaremos? — Los KPIs cuantifican el progreso.'},
+  {front:'A · Alcanzable', back:'¿Es posible con los recursos actuales? — Vroom: las personas se motivan más ante metas que creen alcanzables.'},
+  {front:'R · Relevante/Realista', back:'¿Es consistente con otras metas a largo plazo? — Debe alinearse con la misión y visión organizacional.'},
+  {front:'T · Con límite de tiempo', back:'¿Cuándo debe alcanzarse? ¿Plazos intermedios? — Un marco temporal motiva a priorizar tareas.'}
+]);
+
+/* ---- 4.3 ---- */
+renderAccordion('acc43imp',[
+  {title:'⚡ Interpretación rápida', body:'Visualización inmediata del estado sin analizar datos complejos; identifica prioridades.'},
+  {title:'🧭 Mejora la toma de decisiones', body:'Rojo = acción correctiva inmediata; Amarillo = medidas preventivas antes de una falla crítica.'},
+  {title:'🔁 Monitoreo continuo y eficaz', body:'Detecta desviaciones a tiempo; aumenta la visibilidad del rendimiento en tiempo real.'},
+  {title:'🛡️ Apoyo a la gestión de riesgos', body:'Identifica áreas de alto riesgo; permite mitigación proactiva antes de problemas graves.'}
+]);
+
+/* ========================================================
+   EJERCICIOS PRÁCTICOS APLICADOS (más allá de la teoría)
+   ======================================================== */
+
+/* ---- 1.3 caso de decisión de estructura ---- */
+renderCaseChoices('mc13',[
+  {text:'Una startup tecnológica de 15 personas que necesita lanzar productos rápido y adaptarse al mercado.', options:[{label:'Estructura Tradicional',correct:false},{label:'Estructura Moderna',correct:true}], explain:'Correcto: equipos pequeños que requieren agilidad e innovación se benefician de una estructura moderna, descentralizada y en red.'},
+  {text:'Una entidad pública que debe garantizar control, trazabilidad y cumplimiento normativo estricto.', options:[{label:'Estructura Tradicional',correct:true},{label:'Estructura Moderna',correct:false}], explain:'Correcto: el control, la estabilidad y la cadena de mando clara favorecen una estructura tradicional en este contexto.'},
+  {text:'Una empresa de manufactura consolidada que busca eficiencia en tareas repetitivas y especialización por área.', options:[{label:'Estructura Tradicional',correct:true},{label:'Estructura Moderna',correct:false}], explain:'Correcto: la especialización funcional y el control por jerarquía son fortalezas de la estructura tradicional en procesos estables y repetitivos.'}
+]);
+
+/* ---- 2.4 caso de estrategia competitiva ---- */
+renderCaseChoices('mc24',[
+  {text:'Una cadena de supermercados que negocia grandes volúmenes de compra para ofrecer los precios más bajos del mercado.', options:[{label:'Liderazgo en Costos',correct:true},{label:'Diferenciación',correct:false},{label:'Enfoque/Segmentación',correct:false}], explain:'Correcto: busca ser el productor/vendedor de bajo costo, optimizando toda la cadena de valor para reducir gastos.'},
+  {text:'Una marca de relojes de lujo que invierte en diseño exclusivo y materiales premium.', options:[{label:'Liderazgo en Costos',correct:false},{label:'Diferenciación',correct:true},{label:'Enfoque/Segmentación',correct:false}], explain:'Correcto: invierte en actividades que aumentan el valor percibido como único por el cliente.'},
+  {text:'Una clínica dental especializada exclusivamente en ortodoncia infantil.', options:[{label:'Liderazgo en Costos',correct:false},{label:'Diferenciación',correct:false},{label:'Enfoque/Segmentación',correct:true}], explain:'Correcto: personaliza toda su cadena de valor para atender mejor a un segmento específico del mercado.'}
+]);
+
+/* ---- 4.1 calculadora de KPI ---- */
+function checkKpiCalc(inputId, correctValue, tolerance, fbId){
+  const val = parseFloat(document.getElementById(inputId).value);
+  const fb = document.getElementById(fbId);
+  fb.style.display='block';
+  if(isNaN(val)){ fb.className='feedback bad'; fb.textContent='Ingresa un valor numérico.'; return; }
+  if(Math.abs(val-correctValue) <= tolerance){
+    fb.className='feedback ok';
+    fb.textContent=`¡Correcto! El resultado es ${correctValue}%.`;
+    addScore('kpi_'+inputId,10);
+  } else {
+    fb.className='feedback bad';
+    fb.textContent=`Aún no. Recuerda: (parte / total) × 100. El valor correcto es ${correctValue}%.`;
+  }
+}
+
+/* ---- 4.2 constructor de objetivo SMART ---- */
+function updateSmartBuilder(){
+  const s=document.getElementById('sb_s').value.trim();
+  const m=document.getElementById('sb_m').value.trim();
+  const a=document.getElementById('sb_a').value.trim();
+  const r=document.getElementById('sb_r').value.trim();
+  const t=document.getElementById('sb_t').value.trim();
+  const preview=document.getElementById('smartPreview');
+  if(!s && !m && !a && !r && !t){
+    preview.textContent='Tu objetivo SMART aparecerá aquí a medida que completas los campos…';
+    return;
+  }
+  let sentence = 'Objetivo: ';
+  sentence += s ? s.charAt(0).toUpperCase()+s.slice(1) : '[qué quieres lograr]';
+  sentence += ' ' + (m || '[cifra/porcentaje medible]');
+  sentence += ' ' + (t || '[plazo]');
+  sentence += ', mediante ' + (a || '[acción o recurso]');
+  sentence += ', ' + (r || '[área/proceso relevante]') + '.';
+  preview.innerHTML = sentence;
+  addScore('smart_builder',5);
+}
+
+/* ---- 4.3 dashboard multi-KPI ---- */
+const dashData=[
+  {id:'dash1', correct:'green'},
+  {id:'dash2', correct:'amber'},
+  {id:'dash3', correct:'red'}
+];
+function renderDashboard(){
+  dashData.forEach(d=>{
+    const cell=document.getElementById(d.id);
+    if(!cell) return;
+    ['green','amber','red'].forEach(c=>{
+      const dot=document.createElement('div');
+      dot.className='luz';
+      dot.style.cursor='pointer';
+      dot.title=c;
+      dot.onclick=()=>{
+        cell.querySelectorAll('.luz').forEach(l=>l.style.outline='none');
+        if(c===d.correct){
+          dot.classList.add('on-'+c);
+          dot.style.outline='2px solid '+getComputedStyle(document.documentElement).getPropertyValue('--green');
+          checkDashComplete();
+        } else {
+          dot.classList.add('on-'+c);
+          dot.style.outline='2px solid '+getComputedStyle(document.documentElement).getPropertyValue('--red');
+          setTimeout(()=>{ dot.classList.remove('on-'+c); dot.style.outline='none'; },600);
+        }
+      };
+      cell.appendChild(dot);
+    });
+  });
+}
+function checkDashComplete(){
+  const allCorrect = dashData.every(d=>{
+    const cell=document.getElementById(d.id);
+    return cell.querySelector('.luz.on-'+d.correct);
+  });
+  const fb=document.getElementById('fb_dash');
+  if(allCorrect){
+    fb.textContent='¡Dashboard semaforizado correctamente!';
+    fb.style.color='var(--green)'; fb.style.fontWeight='700';
+    addScore('dashboard43',10);
+  }
+}
+renderDashboard();
+</script>
+</body>
+</html>
